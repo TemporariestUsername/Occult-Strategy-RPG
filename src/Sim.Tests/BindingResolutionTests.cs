@@ -72,4 +72,19 @@ public class BindingResolutionTests
 
         Assert.False(r.Success);
     }
+
+    [Fact]
+    public void RecruitPool_IsAResolvableCandidateSource()
+    {
+        var s = GameState.NewCampaign(1);
+        var prospect = Infiltrator("prospect", 3, 0);
+        prospect.Skills["Persuasion"] = 2;
+        s.RecruitPool.Add(prospect);
+
+        string json = "{\"recruit\":{\"from\":\"recruit_pool\",\"require\":[{\"type\":\"scope_skill\",\"key\":\"Persuasion\"}]}}";
+        BindingResolution r = BindingResolver.Resolve(s, Bindings(json), Rng());
+
+        Assert.True(r.Success);
+        Assert.Equal("prospect", r.Context.Require("recruit").Id);
+    }
 }

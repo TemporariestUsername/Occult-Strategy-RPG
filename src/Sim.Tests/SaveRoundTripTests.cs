@@ -69,10 +69,12 @@ public class SaveRoundTripTests
         Assert.Equal(0, loaded.OrderCorruption); // backfilled
         Assert.Equal(40, loaded.Funds);          // preserved
         Assert.Equal(55, loaded.Veil);           // preserved
-        Assert.False(loaded.IsGameOver);         // v2 field, backfilled through 0 -> 1 -> 2 -> 3
+        Assert.False(loaded.IsGameOver);         // v2 field, backfilled through 0 -> 1 -> 2 -> 3 -> 4
         Assert.Empty(loaded.ReagentItems);       // v2 field, backfilled
         Assert.Null(loaded.ChosenGreatWork);     // v3 field, backfilled
         Assert.Equal(0, loaded.GreatWorkStep);   // v3 field, backfilled
+        Assert.Empty(loaded.ActiveSchemes);      // v4 field, backfilled
+        Assert.Empty(loaded.RecruitPool);        // v4 field, backfilled
     }
 
     [Fact]

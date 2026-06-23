@@ -14,7 +14,7 @@ static int Run()
 
     string schemaPath = Path.Combine(root, "schemas", "event.schema.json");
     string registryPath = Path.Combine(root, "content", "registry.json");
-    string contentDir = Path.Combine(root, "content");
+    string eventsDir = Path.Combine(root, "content", "events");
 
     if (!File.Exists(registryPath))
     {
@@ -25,11 +25,13 @@ static int Run()
     SchemaVocabulary vocab = SchemaVocabulary.Load(schemaPath);
     ContentRegistry registry = ContentRegistry.Load(registryPath);
 
-    List<string> files = Directory
-        .EnumerateFiles(contentDir, "*.json", SearchOption.AllDirectories)
-        .Where(f => !string.Equals(Path.GetFileName(f), "registry.json", StringComparison.Ordinal))
-        .OrderBy(f => f, StringComparer.Ordinal)
-        .ToList();
+    // Event content lives under content/events/. Other content types (schemes, rituals)
+    // have their own schemas and validation, added when their content lands.
+    List<string> files = Directory.Exists(eventsDir)
+        ? Directory.EnumerateFiles(eventsDir, "*.json", SearchOption.AllDirectories)
+            .OrderBy(f => f, StringComparer.Ordinal)
+            .ToList()
+        : new List<string>();
 
     var diagnostics = new List<Diagnostic>();
     var cards = new List<(string File, JsonElement Card)>();

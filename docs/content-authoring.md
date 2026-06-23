@@ -14,6 +14,18 @@ registry. You should never need to touch C# to add an event.
 - See `content/events/example_events.json` for worked examples (onboarding, an
   intrigue card with a skill check, a patron pact).
 
+## Schemes
+
+- A scheme is a time-based action: assign characters, let its `duration` (in turns)
+  elapse, then it resolves via a skill `check` or a deterministic `outcome`. Scheme
+  files are arrays conforming to `schemas/scheme.schema.json`, which **reuses** the
+  event vocabulary (conditions, effects, checks, selectors, outcomes) — one source of
+  truth for the typed vocabulary.
+- Put scheme files under `content/schemes/`. A scheme's optional `category` is a free
+  string validated against the registry; register new ids as you would for events.
+- The simulation runs schemes via `SchemeService` (start / assign / resolve) and
+  `TurnSystem` (the turn loop). No scheme content ships yet — author it here when ready.
+
 ## The content registry
 
 `content/registry.json` lists the valid ids for each open content category
@@ -28,6 +40,9 @@ registry. Attributes and skills are **not** in the registry — they are fixed i
 ```
 dotnet run --project tools/ContentValidator
 ```
+
+It validates the event files under `content/events/`; other content types (schemes,
+rituals) get their own validation as that content lands.
 
 - **Errors** (exit code 1) are things wrong regardless of how much content exists
   yet: a malformed id, an unknown effect/condition `type`, an unknown

@@ -1,6 +1,5 @@
 using PaleCommunion.Sim.Content;
 using PaleCommunion.Sim.Determinism;
-using PaleCommunion.Sim.Model;
 using PaleCommunion.Sim.State;
 
 namespace PaleCommunion.Sim.Engine;
@@ -124,47 +123,11 @@ public static class EventResolver
         _ => choice.OnFailure,
     };
 
-    private static bool CanAfford(GameState state, List<Cost>? cost)
-    {
-        if (cost is null)
-        {
-            return true;
-        }
-
-        return cost.All(c => ResourceValue(state, c.Resource) >= c.Amount);
-    }
+    private static bool CanAfford(GameState state, List<Cost>? cost) => ResourceLedger.CanAfford(state, cost);
 
     private static void PayCost(GameState state, List<Cost>? cost)
     {
-        if (cost is null)
-        {
-            return;
-        }
-
-        foreach (Cost c in cost)
-        {
-            PayResource(state, c.Resource, c.Amount);
-        }
-
+        ResourceLedger.Pay(state, cost);
         state.Normalize();
-    }
-
-    private static double ResourceValue(GameState s, string resource) => resource switch
-    {
-        ContentIds.Funds => s.Funds,
-        ContentIds.Lore => s.Lore,
-        ContentIds.Reagents => s.Reagents,
-        _ => throw new ArgumentException($"Unknown cost resource '{resource}'."),
-    };
-
-    private static void PayResource(GameState s, string resource, double amount)
-    {
-        switch (resource)
-        {
-            case ContentIds.Funds: s.Funds -= amount; break;
-            case ContentIds.Lore: s.Lore -= amount; break;
-            case ContentIds.Reagents: s.Reagents -= amount; break;
-            default: throw new ArgumentException($"Unknown cost resource '{resource}'.");
-        }
     }
 }

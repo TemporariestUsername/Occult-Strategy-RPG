@@ -55,6 +55,13 @@ public sealed class GameState
     public string? ChosenGreatWork { get; set; }
     public int GreatWorkStep { get; set; }
 
+    // The action economy.
+    public List<ActiveScheme> ActiveSchemes { get; set; } = new();
+    public List<Member> RecruitPool { get; set; } = new();
+
+    /// <summary>Per-scheme earliest turn it may start again (cooldown bookkeeping).</summary>
+    public Dictionary<string, int> SchemeAvailableOn { get; set; } = new();
+
     public const string DefaultCity = "Boston";
     public const int StartYear = 1905;
     public const double MeterMin = 0;
@@ -137,6 +144,19 @@ public sealed class GameState
         }
 
         GreatWorkStep = Math.Max(0, GreatWorkStep);
+
+        foreach (Member m in RecruitPool)
+        {
+            m.Corruption = ClampMeter(m.Corruption);
+        }
+
+        foreach (ActiveScheme scheme in ActiveSchemes)
+        {
+            if (scheme.TurnsRemaining < 0)
+            {
+                scheme.TurnsRemaining = 0;
+            }
+        }
     }
 
     public static double ClampMeter(double value) => Math.Clamp(value, MeterMin, MeterMax);

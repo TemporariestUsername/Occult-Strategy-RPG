@@ -53,7 +53,7 @@ public static class BindingResolver
 
     private static Member? Select(GameState state, Selector selector, IRng rng)
     {
-        List<Member> matches = Pool(state, selector.From)
+        List<Member> matches = PoolFor(state, selector.From)
             .Where(m => Matches(m, selector.Require))
             .ToList();
 
@@ -70,12 +70,14 @@ public static class BindingResolver
         };
     }
 
-    private static IEnumerable<Member> Pool(GameState state, string from) => from switch
+    /// <summary>The candidate pool a selector draws from. Shared with the scheme system.</summary>
+    internal static IEnumerable<Member> PoolFor(GameState state, string from) => from switch
     {
         "member" => state.Members.Where(m => m.IsAlive),
+        "recruit_pool" => state.RecruitPool.Where(m => m.IsAlive),
 
-        // recruit_pool, rival_order, npc, institution_contact are not modelled yet;
-        // they resolve to an empty pool until those systems land.
+        // rival_order, npc, institution_contact are not modelled yet; they resolve to an
+        // empty pool until those systems land.
         _ => Enumerable.Empty<Member>(),
     };
 

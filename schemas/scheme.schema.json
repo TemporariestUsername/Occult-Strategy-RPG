@@ -1,0 +1,63 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://palecommunion.dev/schemas/scheme.schema.json",
+  "title": "Schemes",
+  "description": "A content file is an ARRAY of schemes. A scheme is the action economy's verb: assign one or more characters, let its duration elapse, then it resolves via a skill check or a deterministic outcome and applies effects. Conditions, effects, checks, selectors, and outcomes reuse the shared vocabulary defined in event.schema.json, so there is one source of truth for the typed vocabulary.",
+  "type": "array",
+  "items": { "$ref": "#/$defs/scheme" },
+
+  "$defs": {
+    "scheme": {
+      "type": "object",
+      "required": ["id", "title", "duration"],
+      "additionalProperties": false,
+      "anyOf": [
+        { "required": ["outcome"] },
+        { "required": ["check"] },
+        { "required": ["on_success"] }
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9]+([._-][a-z0-9]+)*$",
+          "description": "Globally unique. Convention: category.short_name (e.g. intrigue.infiltrate_police)."
+        },
+        "title": { "type": "string" },
+        "description": { "type": "string", "description": "Flavour. Supports {scope.field} interpolation." },
+        "tags": { "type": "array", "items": { "type": "string" } },
+        "category": {
+          "type": "string",
+          "description": "Optional institution/theme this scheme targets (a free string validated against the content registry)."
+        },
+        "duration": { "type": "integer", "minimum": 1, "description": "Turns until the scheme resolves." },
+        "repeatable": { "type": "boolean", "default": false },
+        "cooldown_turns": { "type": "integer", "minimum": 0, "description": "Turns after resolution before it may start again." },
+        "requirements": {
+          "$ref": "https://palecommunion.dev/schemas/event.schema.json#/$defs/condition",
+          "description": "Availability gate."
+        },
+        "cost": {
+          "type": "array",
+          "description": "Resources gated on and deducted when the scheme starts.",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["resource", "amount"],
+            "properties": { "resource": { "type": "string" }, "amount": { "type": "number" } }
+          }
+        },
+        "bindings": {
+          "type": "object",
+          "description": "Named scopes the player assigns characters to; the scheme's check and effects reference them.",
+          "additionalProperties": { "$ref": "https://palecommunion.dev/schemas/event.schema.json#/$defs/selector" }
+        },
+        "check": { "$ref": "https://palecommunion.dev/schemas/event.schema.json#/$defs/check" },
+        "outcome": { "$ref": "https://palecommunion.dev/schemas/event.schema.json#/$defs/outcome" },
+        "on_success": { "$ref": "https://palecommunion.dev/schemas/event.schema.json#/$defs/outcome" },
+        "on_failure": { "$ref": "https://palecommunion.dev/schemas/event.schema.json#/$defs/outcome" },
+        "on_critical_success": { "$ref": "https://palecommunion.dev/schemas/event.schema.json#/$defs/outcome" },
+        "on_critical_failure": { "$ref": "https://palecommunion.dev/schemas/event.schema.json#/$defs/outcome" }
+      }
+    }
+  }
+}

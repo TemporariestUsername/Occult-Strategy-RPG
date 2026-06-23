@@ -163,7 +163,7 @@ src/Sim/                 Pure C# simulation — ALL game rules. Zero Godot refer
 src/Sim.Tests/           xUnit tests for the simulation (run before every commit).
 game/                    Godot 4 project — presentation only. References Sim. No game rules. (not scaffolded yet)
 content/                 Game data (events, …) as authored JSON + the content registry.
-schemas/                 JSON Schemas that validate content/. event.schema.json is the event contract.
+schemas/                 JSON Schemas for content/. event.schema.json and scheme.schema.json are the contracts.
 tools/ContentValidator/  Validates content/ against schemas/ and the registry.
 docs/                    Design plan, art bible, and authoring guides.
 assets/                  Source art (portraits, event illustrations, icons, UI, marketing). (destinations for Codex)
@@ -239,9 +239,10 @@ game's presentation layer and most content are not built yet.
 | Characters, bindings, skill checks, full event resolution | ✅ resolves real cards end-to-end, unit-tested |
 | Effect / condition vocabulary | ✅ complete — every schema type has a handler (guarded by a test) |
 | Great Work endgames — progression + `great_work_*` (the multi-step paths are authored content) | ✅ unit-tested |
+| Scheme / timer action economy + turn loop (`SchemeService`, `TurnSystem`) | ✅ unit-tested |
 | Content validator (`tools/ContentValidator`) | ✅ working |
 | Boston as the v1 setting | ✅ baked into the design and `NewCampaign` |
-| Scheme / timer action economy; recruit-pool & rival orders | ⏳ next |
+| Binding pools — `member` ✅, `recruit_pool` ✅; `rival_order` / `npc` / `institution_contact` | ⏳ pending |
 | `game/` Godot project & UI | ⛔ not started |
 | Art assets | ⛔ not started — see the art bible |
 
