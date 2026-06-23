@@ -41,7 +41,15 @@ public sealed class GameState
     public HashSet<string> UnlockedSchemes { get; set; } = new();
     public HashSet<string> KnownSecrets { get; set; } = new();
     public HashSet<string> Relics { get; set; } = new();
+    public Dictionary<string, int> ReagentItems { get; set; } = new();
     public Dictionary<string, double> PatronRelationships { get; set; } = new();
+    public List<Relationship> Relationships { get; set; } = new();
+
+    // Event flow + endgame.
+    public List<QueuedEvent> Queue { get; set; } = new();
+    public int RecruitCounter { get; set; }
+    public string? Ending { get; set; }
+    public bool IsGameOver { get; set; }
 
     public const string DefaultCity = "Boston";
     public const int StartYear = 1905;
@@ -104,6 +112,24 @@ public sealed class GameState
         foreach (Member m in Members)
         {
             m.Corruption = ClampMeter(m.Corruption);
+        }
+
+        foreach (Relationship r in Relationships)
+        {
+            r.Value = Math.Clamp(r.Value, -100.0, 100.0);
+        }
+
+        foreach (string id in PatronRelationships.Keys.ToList())
+        {
+            PatronRelationships[id] = Math.Clamp(PatronRelationships[id], -100.0, 100.0);
+        }
+
+        foreach (string id in ReagentItems.Keys.ToList())
+        {
+            if (ReagentItems[id] < 0)
+            {
+                ReagentItems[id] = 0;
+            }
         }
     }
 

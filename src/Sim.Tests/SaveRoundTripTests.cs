@@ -69,6 +69,8 @@ public class SaveRoundTripTests
         Assert.Equal(0, loaded.OrderCorruption); // backfilled
         Assert.Equal(40, loaded.Funds);          // preserved
         Assert.Equal(55, loaded.Veil);           // preserved
+        Assert.False(loaded.IsGameOver);         // v2 field, backfilled through 0 -> 1 -> 2
+        Assert.Empty(loaded.ReagentItems);       // v2 field, backfilled
     }
 
     [Fact]
@@ -81,6 +83,6 @@ public class SaveRoundTripTests
     public void CurrentSave_DeclaresExpectedVersion()
     {
         string json = SaveSystem.Save(GameState.NewCampaign(1));
-        Assert.Contains("\"version\": 1", json);
+        Assert.Contains($"\"version\": {SaveSystem.CurrentVersion}", json);
     }
 }

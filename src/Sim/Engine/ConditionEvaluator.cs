@@ -7,46 +7,84 @@ using PaleCommunion.Sim.State;
 namespace PaleCommunion.Sim.Engine;
 
 /// <summary>
-/// Evaluates the order-level condition vocabulary against a <see cref="GameState"/>.
-/// Character-scoped leaves (scope_*, member_with_*, secret/patron/relic tests) arrive
-/// with the character subsystem; until then this evaluator throws on them rather than
-/// guessing, so a missing handler fails loudly instead of silently passing.
+/// Evaluates the condition vocabulary against a <see cref="GameState"/> (and, where a
+/// leaf names a scope, a <see cref="BindingContext"/>). Great Work leaves arrive with
+/// that system and throw until then, so a missing handler fails loudly.
 /// </summary>
 public static class ConditionEvaluator
 {
-    public static bool Evaluate(GameState state, Condition condition, IRng rng)
+    public static bool Evaluate(GameState state, Condition condition, IRng rng, BindingContext? context = null)
     {
         ArgumentNullException.ThrowIfNull(state);
         ArgumentNullException.ThrowIfNull(condition);
         ArgumentNullException.ThrowIfNull(rng);
 
-        switch (condition.Type)
+        return condition.Type switch
         {
-            case "all_of":
-                return Children(condition).All(c => Evaluate(state, c, rng));
-            case "any_of":
-                return Children(condition).Any(c => Evaluate(state, c, rng));
-            case "none_of":
-                return !Children(condition).Any(c => Evaluate(state, c, rng));
-        }
+            "all_of" => Children(condition).All(c => Evaluate(state, c, rng, context)),
+            "any_of" => Children(condition).Any(c => Evaluate(state, c, rng, context)),
+            "none_of" => !Children(condition).Any(c => Evaluate(state, c, rng, context)),
+            _ => EvaluateLeaf(state, condition, rng, context),
+        };
+    }
 
-        // random_chance is the one leaf that consults the RNG.
-        if (condition.Type == "random_chance")
+    /// <summary>
+    /// Evaluate a character predicate leaf directly against a candidate, with no scope
+    /// lookup. Used by selector <c>require</c>, whose leaves test the candidate itself.
+    /// </summary>
+    public static bool EvaluateCharacter(Member member, Condition leaf)
+    {
+        ArgumentNullException.ThrowIfNull(member);
+        ArgumentNullException.ThrowIfNull(leaf);
+
+        return leaf.Type switch
         {
-            return rng.Chance(AsDouble(condition.Value) ?? 0.0);
-        }
+            "scope_has_trait" => member.HasTrait(leaf.Id ?? string.Empty),
+            "scope_skill" => CompareOrPresence(member.GetSkill(leaf.Key ?? string.Empty), leaf),
+            "scope_attribute" => CompareOrPresence(member.GetAttribute(leaf.Key ?? string.Empty), leaf),
+            _ => throw new NotSupportedException(
+                $"Selector 'require' does not support condition type '{leaf.Type}'."),
+        };
+    }
 
-        if (condition.Type == "flag")
+    private static bool EvaluateLeaf(GameState state, Condition c, IRng rng, BindingContext? ctx)
+    {
+        switch (c.Type)
         {
-            bool current = state.Flags.TryGetValue(condition.Id ?? string.Empty, out bool v) && v;
-            bool expected = AsBool(condition.Value) ?? true;
-            string op = condition.Op ?? "eq";
-            return op == "neq" ? current != expected : current == expected;
+            case "random_chance":
+                return rng.Chance(AsDouble(c.Value) ?? 0.0);
+            case "flag":
+            {
+                bool current = state.Flags.TryGetValue(c.Id ?? string.Empty, out bool v) && v;
+                bool expected = AsBool(c.Value) ?? true;
+                return (c.Op ?? "eq") == "neq" ? current != expected : current == expected;
+            }
+            case "scope_has_trait":
+                return Bound(ctx, c.Scope).HasTrait(c.Id ?? string.Empty);
+            case "scope_skill":
+                return CompareOrPresence(Bound(ctx, c.Scope).GetSkill(c.Key ?? string.Empty), c);
+            case "scope_attribute":
+                return CompareOrPresence(Bound(ctx, c.Scope).GetAttribute(c.Key ?? string.Empty), c);
+            case "member_with_trait":
+                return state.Members.Any(m => m.IsAlive && m.HasTrait(c.Id ?? string.Empty));
+            case "member_with_skill":
+                return state.Members.Any(m => m.IsAlive && CompareOrPresence(m.GetSkill(c.Key ?? string.Empty), c));
+            case "secret_known":
+                return state.KnownSecrets.Contains(c.Id ?? string.Empty);
+            case "has_relic":
+                return state.Relics.Contains(c.Id ?? string.Empty);
+            case "has_reagent":
+                return CompareOrPresence(state.ReagentItems.GetValueOrDefault(c.Id ?? string.Empty), c);
+            case "patron_relationship":
+                return Compare(state.PatronRelationships.GetValueOrDefault(c.Id ?? string.Empty),
+                    AsDouble(c.Value) ?? 0.0, c.Op ?? "gte");
+            case "great_work_chosen":
+            case "great_work_step":
+                throw new NotSupportedException(
+                    $"Condition type '{c.Type}' arrives with the Great Work system.");
+            default:
+                return Compare(ReadScalar(state, c), AsDouble(c.Value) ?? 0.0, c.Op ?? "gte");
         }
-
-        double actual = ReadScalar(state, condition);
-        double target = AsDouble(condition.Value) ?? 0.0;
-        return Compare(actual, target, condition.Op ?? "gte");
     }
 
     private static IEnumerable<Condition> Children(Condition c) =>
@@ -84,10 +122,17 @@ public static class ConditionEvaluator
         };
     }
 
+    private static Member Bound(BindingContext? ctx, string? scope) =>
+        ctx is not null && scope is not null && ctx.TryGet(scope, out Member? m) && m is not null
+            ? m
+            : throw new InvalidOperationException(
+                $"Condition references scope '{scope}' which is not bound to a member.");
+
+    private static bool CompareOrPresence(double actual, Condition c) =>
+        c.Value is null ? actual >= 1 : Compare(actual, AsDouble(c.Value) ?? 0.0, c.Op ?? "gte");
+
     private static InstitutionState Inst(GameState s, string key) =>
-        s.Institutions.TryGetValue(key, out InstitutionState? inst)
-            ? inst
-            : throw Unknown("institution", key);
+        s.Institutions.TryGetValue(key, out InstitutionState? inst) ? inst : throw Unknown("institution", key);
 
     private static bool Compare(double actual, double target, string op) => op switch
     {

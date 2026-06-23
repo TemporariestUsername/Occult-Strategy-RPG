@@ -16,10 +16,10 @@ public enum MemberStatus
 }
 
 /// <summary>
-/// A named initiate. Deliberately minimal for now — the full character RPG layer
-/// (attributes, skills, traits, relationships) lands with its own schema and
-/// systems. Present here so order-level rules (e.g. member_count) and saves have a
-/// stable shape from day one.
+/// A named initiate — the heart of the order. Carries the fixed attribute and skill
+/// vocabularies (keyed by their schema names, e.g. "Guile", "Infiltration"; an absent
+/// entry reads as 0), a set of trait content ids, a status, and a personal corruption
+/// track.
 /// </summary>
 public sealed class Member
 {
@@ -30,8 +30,27 @@ public sealed class Member
     /// <summary>Per-character corruption, 0..100.</summary>
     public double Corruption { get; set; }
 
+    /// <summary>Attributes keyed by schema name: Intellect, Will, Presence, Guile, Body.</summary>
+    public Dictionary<string, int> Attributes { get; set; } = new();
+
+    /// <summary>Skills keyed by schema name: Lore, Ritual, Infiltration, Persuasion, Violence, Medicine, Finance.</summary>
+    public Dictionary<string, int> Skills { get; set; } = new();
+
+    /// <summary>Trait content ids (e.g. "aristocrat").</summary>
+    public HashSet<string> Traits { get; set; } = new();
+
     [JsonIgnore]
     public bool IsAlive => Status != MemberStatus.Dead;
+
+    public int GetAttribute(string name) => Attributes.TryGetValue(name, out int v) ? v : 0;
+
+    public int GetSkill(string name) => Skills.TryGetValue(name, out int v) ? v : 0;
+
+    /// <summary>Attribute or skill value by name (attributes win on a name clash); 0 if neither exists.</summary>
+    public int GetStat(string name) =>
+        Attributes.TryGetValue(name, out int a) ? a : (Skills.TryGetValue(name, out int s) ? s : 0);
+
+    public bool HasTrait(string id) => Traits.Contains(id);
 }
 
 /// <summary>One institution's standing toward the order.</summary>

@@ -43,5 +43,6 @@ If a card needs an effect or condition the schema can't express, you must first 
 the new value to the relevant `type` enum in `schemas/event.schema.json` **and**
 implement its handler in `src/Sim` (see `EffectEngine` / `ConditionEvaluator`), in
 the same change. Don't author content against a type the schema doesn't list yet.
-The simulation currently implements the order-level economy subset; other types are
-valid vocabulary whose handlers land with their systems.
+The simulation implements the full effect/condition vocabulary except the Great Work
+family (`great_work_*`), whose handlers land with that system; those leaves throw /
+report as unhandled until then rather than passing silently.

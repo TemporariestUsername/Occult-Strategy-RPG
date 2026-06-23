@@ -65,18 +65,17 @@ public class EconomyTests
     {
         var s = GameState.NewCampaign(1);
 
-        // The on_success effects of intrigue.magistrate_weakness from example_events.json:
-        // the economy effects apply now; gain_secret is part of the vocabulary but its
-        // handler ships with the secrets system.
+        // Most of the vocabulary is handled now; Great Work effects are still deferred
+        // (their handlers ship with that system). Economy effects around them still apply.
         string json = "[" +
             "{\"type\":\"institution_influence\",\"key\":\"state\",\"amount\":15}," +
-            "{\"type\":\"gain_secret\",\"id\":\"magistrate_second_name\",\"about_scope\":\"actor\"}," +
+            "{\"type\":\"great_work_advance\",\"id\":\"the_opening\",\"steps\":1}," +
             "{\"type\":\"attention\",\"key\":\"mundane\",\"amount\":5}]";
         EffectResult r = EffectEngine.Apply(s, Effects(json), Rng());
 
         Assert.Equal(15, s.Institutions["state"].Influence);
         Assert.Equal(5, s.AttentionMundane);
-        Assert.Contains("gain_secret", r.Unhandled);
+        Assert.Contains("great_work_advance", r.Unhandled);
         Assert.False(r.FullyApplied);
     }
 
@@ -117,8 +116,9 @@ public class EconomyTests
     [Fact]
     public void UnsupportedConditionLeaf_ThrowsLoudly()
     {
+        // Great Work conditions are not implemented yet and must fail loudly, not pass silently.
         var s = GameState.NewCampaign(1);
         Assert.Throws<NotSupportedException>(
-            () => ConditionEvaluator.Evaluate(s, Cond("{\"type\":\"scope_has_trait\",\"scope\":\"actor\",\"id\":\"zealot\"}"), Rng()));
+            () => ConditionEvaluator.Evaluate(s, Cond("{\"type\":\"great_work_chosen\",\"id\":\"the_opening\"}"), Rng()));
     }
 }

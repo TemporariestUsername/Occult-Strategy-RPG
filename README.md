@@ -235,11 +235,13 @@ game's presentation layer and most content are not built yet.
 | Area | Status |
 |---|---|
 | Design docs, schema, content pipeline | ✅ in place |
-| Simulation core — RNG, economy, effects/conditions engine, versioned saves | ✅ order-level slice, unit-tested |
+| Simulation core — RNG, economy, versioned saves | ✅ unit-tested |
+| Characters, bindings, skill checks, full event resolution | ✅ resolves real cards end-to-end, unit-tested |
+| Effect / condition vocabulary | ✅ implemented except the Great Work family |
 | Content validator (`tools/ContentValidator`) | ✅ working |
 | Boston as the v1 setting | ✅ baked into the design and `NewCampaign` |
-| Character model, scope/binding resolver, full event loop | ⏳ next |
-| Remaining effect handlers (character/secret/patron/ritual/great-work) | ⏳ vocabulary defined, handlers pending |
+| Great Work endgames (progression + `great_work_*` handlers) | ⏳ next |
+| Scheme / timer action economy; recruit-pool & rival orders | ⏳ pending |
 | `game/` Godot project & UI | ⛔ not started |
 | Art assets | ⛔ not started — see the art bible |
 
