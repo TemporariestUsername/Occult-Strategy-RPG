@@ -75,6 +75,7 @@ public class SaveRoundTripTests
         Assert.Equal(0, loaded.GreatWorkStep);   // v3 field, backfilled
         Assert.Empty(loaded.ActiveSchemes);      // v4 field, backfilled
         Assert.Empty(loaded.RecruitPool);        // v4 field, backfilled
+        Assert.Empty(loaded.EventAvailableOn);   // v5 field, backfilled
     }
 
     [Fact]

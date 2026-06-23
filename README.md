@@ -229,8 +229,10 @@ the period, and on-tone. The agents are force-multipliers, not deciders.
 
 ## Status & roadmap
 
-Early foundation. The simulation core and content pipeline are real and tested; the
-game's presentation layer and most content are not built yet.
+The whole Phase-0 simulation loop is now real and tested — recruit → assign a scheme →
+resolve over turns → spend Lore → perform a ritual → face a threat — along with saves,
+the full content vocabulary, and the endgames. The game's presentation layer (Godot) and
+the bulk of the content (writing) are the major pieces still ahead.
 
 | Area | Status |
 |---|---|
@@ -241,6 +243,7 @@ game's presentation layer and most content are not built yet.
 | Great Work endgames — progression + `great_work_*` (the multi-step paths are authored content) | ✅ unit-tested |
 | Scheme / timer action economy + turn loop (`SchemeService`, `TurnSystem`) | ✅ unit-tested |
 | Rituals — perform, Lore/reagent cost, inherent price + side effects (`RitualService`) | ✅ unit-tested |
+| Event pool / scheduler — eligibility, priority + weighted draw, cooldowns; threats as pool events (`EventScheduler`) | ✅ unit-tested |
 | Content validator (`tools/ContentValidator`) | ✅ working |
 | Boston as the v1 setting | ✅ baked into the design and `NewCampaign` |
 | Binding pools — `member` ✅, `recruit_pool` ✅; `rival_order` / `npc` / `institution_contact` | ⏳ pending |

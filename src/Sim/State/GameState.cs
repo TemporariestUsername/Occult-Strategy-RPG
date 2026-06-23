@@ -62,6 +62,9 @@ public sealed class GameState
     /// <summary>Per-scheme earliest turn it may start again (cooldown bookkeeping).</summary>
     public Dictionary<string, int> SchemeAvailableOn { get; set; } = new();
 
+    /// <summary>Per-event earliest turn it may fire again (cooldown / once-only bookkeeping).</summary>
+    public Dictionary<string, int> EventAvailableOn { get; set; } = new();
+
     public const string DefaultCity = "Boston";
     public const int StartYear = 1905;
     public const double MeterMin = 0;
