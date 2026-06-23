@@ -1,0 +1,196 @@
+[
+  {
+    "id": "onboarding.empty_chair",
+    "title": "The Empty Chair",
+    "category": "onboarding",
+    "priority": 100,
+    "trigger": { "type": "scripted" },
+    "body": "Five of you in the back room above the apothecary, and a sixth chair left empty for the one who taught you the Signs and then did not come back from the front. The candle gutters. Someone must speak first.",
+    "choices": [
+      {
+        "id": "name_the_order",
+        "label": "Name the order, and call the empty chair a vacancy to be filled.",
+        "outcome": {
+          "result_text": "A name is a wound the world can find you by — and a thing men will die for. The work begins.",
+          "effects": [
+            { "type": "devotion", "amount": 5 },
+            { "type": "set_flag", "id": "order_named", "value": true },
+            { "type": "resource", "key": "lore", "amount": 2 }
+          ]
+        }
+      },
+      {
+        "id": "leave_it_empty",
+        "label": "Leave the chair empty. Let them remember what knowledge costs.",
+        "outcome": {
+          "result_text": "Fear keeps a secret better than loyalty does. For now.",
+          "effects": [
+            { "type": "veil", "amount": 5 },
+            { "type": "devotion", "amount": -3 },
+            { "type": "set_flag", "id": "order_named", "value": false }
+          ]
+        }
+      }
+    ]
+  },
+
+  {
+    "id": "intrigue.magistrate_weakness",
+    "title": "A Magistrate's Weakness",
+    "category": "intrigue",
+    "weight": 2,
+    "repeatable": true,
+    "cooldown_turns": 12,
+    "trigger": {
+      "type": "pool",
+      "conditions": {
+        "type": "all_of",
+        "conditions": [
+          { "type": "member_count", "op": "gte", "value": 2 },
+          { "type": "veil", "op": "gte", "value": 20 },
+          { "type": "institution_influence", "key": "state", "op": "lte", "value": 40 }
+        ]
+      }
+    },
+    "bindings": {
+      "actor": {
+        "from": "member",
+        "require": [{ "type": "scope_skill", "key": "Infiltration" }],
+        "prefer": "highest",
+        "by": "Guile"
+      }
+    },
+    "body": "{actor.name} brings word: a magistrate of the State court keeps a second household, and a second name. A lever — if you are willing to be the kind of order that pulls levers.",
+    "choices": [
+      {
+        "id": "blackmail",
+        "label": "Have {actor.name} make the approach. Quietly.",
+        "check": {
+          "scope": "actor",
+          "attribute": "Guile",
+          "skill": "Infiltration",
+          "difficulty": 12,
+          "modifiers": [
+            { "value": 3, "when": { "type": "scope_has_trait", "scope": "actor", "id": "aristocrat" }, "note": "Moves in the same circles." }
+          ]
+        },
+        "on_success": {
+          "result_text": "The magistrate's hands shake as he signs. A door in the State now opens to a knock only you can give.",
+          "effects": [
+            { "type": "institution_influence", "key": "state", "amount": 15 },
+            { "type": "gain_secret", "id": "magistrate_second_name", "about_scope": "actor" },
+            { "type": "attention", "key": "mundane", "amount": 5 }
+          ]
+        },
+        "on_failure": {
+          "result_text": "He does not frighten. He remembers faces. {actor.name} is followed home.",
+          "effects": [
+            { "type": "attention", "key": "mundane", "amount": 15 },
+            { "type": "veil", "amount": -10 },
+            { "type": "member_status", "scope": "actor", "status": "injured" }
+          ]
+        }
+      },
+      {
+        "id": "recruit_him",
+        "label": "Do not threaten him. Offer him the Signs instead.",
+        "requirements": { "type": "scope_has_trait", "scope": "actor", "id": "persuasive" },
+        "requirement_mode": "disable",
+        "locked_hint": "Requires a persuasive emissary.",
+        "cost": [{ "resource": "funds", "amount": 50 }],
+        "outcome": {
+          "result_text": "A man with a secret is a man already half-converted. He takes the oath before dawn.",
+          "effects": [
+            { "type": "recruit", "template": "state_official", "count": 1 },
+            { "type": "devotion", "amount": 3 },
+            { "type": "institution_influence", "key": "state", "amount": 8 }
+          ],
+          "next_event": "intrigue.first_favour",
+          "next_event_delay": 3
+        }
+      },
+      {
+        "id": "refuse",
+        "label": "Bury it. The order does not yet need enemies in the courts.",
+        "outcome": {
+          "result_text": "Restraint is its own kind of power. {actor.name} looks almost disappointed.",
+          "effects": [{ "type": "veil", "amount": 3 }]
+        }
+      }
+    ]
+  },
+
+  {
+    "id": "patron.reading_room_voice",
+    "title": "The Voice Beneath the Reading Room",
+    "category": "patron",
+    "trigger": {
+      "type": "scripted",
+      "conditions": {
+        "type": "all_of",
+        "conditions": [
+          { "type": "resource", "key": "lore", "op": "gte", "value": 60 },
+          { "type": "order_corruption", "op": "gte", "value": 25 },
+          { "type": "flag", "id": "ritual_first_breach_done", "value": true }
+        ]
+      }
+    },
+    "bindings": {
+      "actor": {
+        "from": "member",
+        "require": [{ "type": "scope_skill", "key": "Lore" }],
+        "prefer": "highest",
+        "by": "Will",
+        "optional": false
+      }
+    },
+    "body": "Below the University's locked Reading Room, where the gas lamps will not stay lit, something has begun to answer {actor.name}'s questions. It asks for very little. It always asks for very little, at first.",
+    "choices": [
+      {
+        "id": "accept_pact",
+        "label": "Let it teach. Pay what it asks.",
+        "outcome": {
+          "result_text": "The knowledge arrives whole, as if remembered rather than learned. {actor.name} does not sleep, and does not seem to mind.",
+          "effects": [
+            { "type": "resource", "key": "lore", "amount": 25 },
+            { "type": "unlock_ritual", "id": "the_borrowed_name" },
+            { "type": "patron_relationship", "id": "the_listener", "amount": 20 },
+            { "type": "order_corruption", "amount": 15 },
+            { "type": "attention", "key": "occult", "amount": 20 },
+            { "type": "member_corruption", "scope": "actor", "amount": 20 }
+          ],
+          "next_event": "patron.the_second_asking",
+          "next_event_delay": 6
+        }
+      },
+      {
+        "id": "wall_it_up",
+        "label": "Brick the door. Forbid the Reading Room to all.",
+        "cost": [{ "resource": "funds", "amount": 100 }],
+        "outcome": {
+          "result_text": "The masons work by daylight only, and quickly. For a week the order sleeps better. {actor.name} does not thank you.",
+          "effects": [
+            { "type": "veil", "amount": 10 },
+            { "type": "attention", "key": "occult", "amount": -10 },
+            { "type": "devotion", "amount": -5 },
+            { "type": "set_flag", "id": "reading_room_sealed", "value": true }
+          ]
+        }
+      },
+      {
+        "id": "feed_it_rival",
+        "label": "Speak a rival's true name into the dark, and let it ask them instead.",
+        "requirements": { "type": "secret_known", "id": "rival_true_name" },
+        "requirement_mode": "hide",
+        "outcome": {
+          "result_text": "You give the name to the dark. The dark seems pleased. Somewhere across the city, another order's lamps begin to gutter.",
+          "effects": [
+            { "type": "patron_relationship", "id": "the_listener", "amount": 10 },
+            { "type": "order_corruption", "amount": 5 },
+            { "type": "reveal_secret", "id": "rival_true_name" }
+          ]
+        }
+      }
+    ]
+  }
+]

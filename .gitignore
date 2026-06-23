@@ -1,0 +1,20 @@
+# Godot 4
+.godot/
+/export/
+/builds/
+*.translation
+
+# .NET / C# (src/Sim, src/Sim.Tests, tools/, game/)
+bin/
+obj/
+*.user
+*.suo
+[Dd]ebug/
+[Rr]elease/
+.vs/
+*.nupkg
+
+# OS / editor cruft
+.DS_Store
+Thumbs.db
+*.swp

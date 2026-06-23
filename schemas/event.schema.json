@@ -1,0 +1,223 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://palecommunion.dev/schemas/event.schema.json",
+  "title": "Event Cards",
+  "description": "A content file is an ARRAY of event cards. Conditions and effects are an extensible, typed vocabulary: to add a capability, add a value to the relevant `type` enum here AND implement its handler in the simulation, in the same change. Never express one-off event logic outside this system. Canonical content ids (institutions, resources, traits, relics, reagents, rituals, schemes, patrons, secrets, great works) are free strings here and are validated at load time against the content registry, not by this schema. Attributes and skills ARE enumerated because the character model fixes them.",
+  "type": "array",
+  "items": { "$ref": "#/$defs/event" },
+
+  "$defs": {
+    "event": {
+      "type": "object",
+      "required": ["id", "title", "body", "choices"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9]+([._-][a-z0-9]+)*$",
+          "description": "Globally unique. Convention: category.short_name (e.g. intrigue.magistrate_weakness)."
+        },
+        "title": { "type": "string" },
+        "body": {
+          "type": "string",
+          "description": "Dilemma prose. Supports {scope.field} interpolation, e.g. {actor.name}, {actor.they}, {actor.them}, {rival.name}."
+        },
+        "art": { "type": "string", "description": "Optional illustration id/path." },
+        "tags": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Free-form labels for filtering and analytics."
+        },
+        "category": {
+          "enum": ["onboarding", "institution", "ritual", "patron", "threat", "intrigue", "character", "random", "chain", "great_work"]
+        },
+        "weight": { "type": "number", "minimum": 0, "default": 1, "description": "Relative selection weight within the random pool." },
+        "priority": { "type": "integer", "default": 0, "description": "Higher is considered first and can preempt the random pool." },
+        "repeatable": { "type": "boolean", "default": false },
+        "cooldown_turns": { "type": "integer", "minimum": 0, "description": "If repeatable, minimum turns before it may fire again." },
+        "trigger": { "$ref": "#/$defs/trigger" },
+        "bindings": {
+          "type": "object",
+          "additionalProperties": { "$ref": "#/$defs/selector" },
+          "description": "Resolve named character scopes (e.g. actor, rival, target) referenced by body text, requirements, checks, and effects."
+        },
+        "on_appear": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/effect" },
+          "description": "Effects applied when the event first appears, before any choice."
+        },
+        "choices": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/choice" } }
+      }
+    },
+
+    "trigger": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "enum": ["pool", "scripted", "on_action"],
+          "default": "pool",
+          "description": "pool = eligible for random draw when conditions pass; scripted = fired only by another effect/flag; on_action = considered after a specific scheme/ritual resolves."
+        },
+        "conditions": { "$ref": "#/$defs/condition", "description": "Eligibility gate. If omitted, always eligible." },
+        "action": { "type": "string", "description": "For type=on_action: the scheme/ritual id whose resolution triggers consideration." }
+      }
+    },
+
+    "condition": {
+      "oneOf": [
+        { "$ref": "#/$defs/conditionGroup" },
+        { "$ref": "#/$defs/conditionLeaf" }
+      ]
+    },
+
+    "conditionGroup": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "conditions"],
+      "properties": {
+        "type": { "enum": ["all_of", "any_of", "none_of"] },
+        "conditions": { "type": "array", "items": { "$ref": "#/$defs/condition" } }
+      }
+    },
+
+    "conditionLeaf": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type"],
+      "description": "Param usage: `key` = resource/institution/skill/attribute/attention-channel; `id` = content id (trait/relic/reagent/flag/great_work/patron/secret); `scope` = a bound character for scope_* tests; `op`+`value` = comparison (default gte when a value is given).",
+      "properties": {
+        "type": {
+          "enum": [
+            "resource", "institution_influence", "institution_disposition", "attention", "veil", "devotion", "order_corruption",
+            "turn", "year", "tier", "great_work_chosen", "great_work_step", "flag",
+            "has_relic", "has_reagent", "member_count", "member_with_trait", "member_with_skill",
+            "scope_has_trait", "scope_skill", "scope_attribute", "patron_relationship", "secret_known", "random_chance"
+          ]
+        },
+        "key": { "type": "string" },
+        "op": { "enum": ["gte", "lte", "gt", "lt", "eq", "neq"] },
+        "value": { "type": ["number", "string", "boolean"] },
+        "scope": { "type": "string" },
+        "id": { "type": "string" }
+      }
+    },
+
+    "selector": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Resolves a character into a named scope. Character conditions in `require` with no `scope` are evaluated against the candidate.",
+      "properties": {
+        "from": { "enum": ["member", "recruit_pool", "rival_order", "npc", "institution_contact"], "default": "member" },
+        "require": { "type": "array", "items": { "$ref": "#/$defs/conditionLeaf" } },
+        "prefer": { "enum": ["random", "highest", "lowest"], "default": "random" },
+        "by": { "type": "string", "description": "Attribute or skill used when prefer is highest/lowest." },
+        "optional": {
+          "type": "boolean",
+          "default": false,
+          "description": "If true and no candidate matches, the binding is left empty and the event may still fire; if false, the event is disqualified."
+        }
+      }
+    },
+
+    "choice": {
+      "type": "object",
+      "required": ["id", "label"],
+      "additionalProperties": false,
+      "anyOf": [{ "required": ["outcome"] }, { "required": ["check"] }],
+      "properties": {
+        "id": { "type": "string" },
+        "label": { "type": "string", "description": "Button text. Supports tokens." },
+        "tooltip": { "type": "string" },
+        "requirements": { "$ref": "#/$defs/condition", "description": "If unmet, the choice is hidden or disabled per requirement_mode." },
+        "requirement_mode": { "enum": ["hide", "disable"], "default": "disable" },
+        "locked_hint": { "type": "string", "description": "Shown when a choice is visible but disabled." },
+        "cost": {
+          "type": "array",
+          "description": "Resources both required (affordability gate) and deducted when chosen. Author once here rather than duplicating as a requirement and an effect.",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["resource", "amount"],
+            "properties": { "resource": { "type": "string" }, "amount": { "type": "number" } }
+          }
+        },
+        "check": { "$ref": "#/$defs/check", "description": "If present, choosing triggers a skill check; provide on_success and on_failure." },
+        "outcome": { "$ref": "#/$defs/outcome", "description": "Deterministic result when there is no check." },
+        "on_success": { "$ref": "#/$defs/outcome" },
+        "on_failure": { "$ref": "#/$defs/outcome" },
+        "on_critical_success": { "$ref": "#/$defs/outcome" },
+        "on_critical_failure": { "$ref": "#/$defs/outcome" }
+      }
+    },
+
+    "outcome": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "result_text": { "type": "string" },
+        "effects": { "type": "array", "items": { "$ref": "#/$defs/effect" } },
+        "next_event": { "type": "string", "description": "Queue an event by id (enables chains)." },
+        "next_event_delay": { "type": "integer", "minimum": 0, "default": 0 }
+      }
+    },
+
+    "check": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["difficulty"],
+      "description": "Provide at least one of attribute/skill. The dice/roll math lives in the simulation, not here.",
+      "properties": {
+        "scope": { "type": "string", "default": "actor", "description": "Which bound character makes the check." },
+        "attribute": { "enum": ["Intellect", "Will", "Presence", "Guile", "Body"] },
+        "skill": { "enum": ["Lore", "Ritual", "Infiltration", "Persuasion", "Violence", "Medicine", "Finance"] },
+        "difficulty": { "type": "number" },
+        "modifiers": { "type": "array", "items": { "$ref": "#/$defs/modifier" } }
+      }
+    },
+
+    "modifier": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["value"],
+      "properties": {
+        "value": { "type": "number" },
+        "when": { "$ref": "#/$defs/condition", "description": "Applies only if this condition holds." },
+        "note": { "type": "string" }
+      }
+    },
+
+    "effect": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type"],
+      "description": "Param usage: `key` names a resource/institution/attention-channel; `amount` is a delta; `value` is a set-value (e.g. set_flag, great_work_set_step); `id` is a content id; `scope`/`target_scope` are bound characters.",
+      "properties": {
+        "type": {
+          "enum": [
+            "resource", "institution_influence", "institution_disposition", "attention", "veil", "devotion", "order_corruption",
+            "add_trait", "remove_trait", "member_corruption", "member_status", "kill_member", "recruit", "relationship",
+            "grant_relic", "remove_relic", "grant_reagent", "remove_reagent",
+            "set_flag", "reveal_secret", "gain_secret", "patron_relationship",
+            "great_work_advance", "great_work_set_step", "unlock_ritual", "unlock_scheme", "tier_change", "queue_event", "end_game"
+          ]
+        },
+        "key": { "type": "string" },
+        "id": { "type": "string" },
+        "scope": { "type": "string" },
+        "target_scope": { "type": "string" },
+        "amount": { "type": "number" },
+        "value": { "type": ["number", "string", "boolean"] },
+        "count": { "type": "integer" },
+        "template": { "type": "string" },
+        "status": { "enum": ["injured", "maddened", "imprisoned", "missing", "exalted", "recovered"] },
+        "kind": { "enum": ["loyalty", "rivalry", "romance", "mentorship"] },
+        "cause": { "type": "string" },
+        "steps": { "type": "integer" },
+        "delay": { "type": "integer", "minimum": 0 },
+        "about_scope": { "type": "string" },
+        "ending": { "type": "string" }
+      }
+    }
+  }
+}
