@@ -1,0 +1,20 @@
+{
+  "_comment": "Content registry: the canonical set of ids the ContentValidator checks event references against. Fixed vocabularies (institutions, resources, attention_channels) are canonical. The open categories grow as content is authored — add an id here when you introduce it. Attributes and skills are NOT listed: they are fixed in schemas/event.schema.json.",
+
+  "institutions": ["church", "university", "press", "underworld", "state", "high_society"],
+  "resources": ["funds", "lore", "reagents"],
+  "attention_channels": ["mundane", "occult"],
+
+  "traits": [
+    "ambitious", "zealot", "skeptic", "touched", "scholar", "aristocrat",
+    "veteran", "addict", "devout", "traitorous", "persuasive"
+  ],
+  "rituals": ["the_borrowed_name"],
+  "schemes": [],
+  "patrons": ["the_listener"],
+  "secrets": ["magistrate_second_name", "rival_true_name"],
+  "relics": [],
+  "reagent_items": [],
+  "great_works": [],
+  "recruit_templates": ["state_official"]
+}

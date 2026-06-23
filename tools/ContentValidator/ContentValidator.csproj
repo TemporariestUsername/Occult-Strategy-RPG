@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    Validates everything under content/ against schemas/event.schema.json and
+    the content registry (content/registry.json). Dependency-free: uses only
+    System.Text.Json from the shared framework.
+    Run from repo root: dotnet run, project tools/ContentValidator
+  -->
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <RootNamespace>PaleCommunion.Tools.ContentValidator</RootNamespace>
+    <AssemblyName>ContentValidator</AssemblyName>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <LangVersion>latest</LangVersion>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+  </PropertyGroup>
+
+</Project>

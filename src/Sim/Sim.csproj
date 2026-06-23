@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    The Pale Communion — simulation library.
+    ALL game rules live here. This project MUST NOT reference Godot or any
+    engine package (CLAUDE.md architecture law 2). Keep it pure, engine-agnostic
+    C# so it stays unit-testable in isolation.
+  -->
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <RootNamespace>PaleCommunion.Sim</RootNamespace>
+    <AssemblyName>PaleCommunion.Sim</AssemblyName>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <LangVersion>latest</LangVersion>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
+
+</Project>
