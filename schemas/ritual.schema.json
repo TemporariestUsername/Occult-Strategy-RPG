@@ -1,0 +1,71 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://palecommunion.dev/schemas/ritual.schema.json",
+  "title": "Rituals",
+  "description": "A content file is an ARRAY of rituals. A ritual is the supernatural tech-tree node: it must be unlocked, it costs Lore/reagents and initiates, and it resolves at once via a skill check into powerful effects and dangerous side effects. Conditions, effects, checks, selectors, and outcomes reuse the shared vocabulary from event.schema.json.",
+  "type": "array",
+  "items": { "$ref": "#/$defs/ritual" },
+
+  "$defs": {
+    "ritual": {
+      "type": "object",
+      "required": ["id", "title"],
+      "additionalProperties": false,
+      "anyOf": [
+        { "required": ["outcome"] },
+        { "required": ["check"] },
+        { "required": ["on_success"] }
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9]+([._-][a-z0-9]+)*$",
+          "description": "Globally unique; must match an id unlocked via the unlock_ritual effect."
+        },
+        "title": { "type": "string" },
+        "description": { "type": "string", "description": "Flavour. Supports {scope.field} interpolation." },
+        "tags": { "type": "array", "items": { "type": "string" } },
+        "requirements": {
+          "$ref": "https://palecommunion.dev/schemas/event.schema.json#/$defs/condition",
+          "description": "Extra gate beyond being unlocked."
+        },
+        "cost": {
+          "type": "array",
+          "description": "Bulk resources (funds/lore/reagents) gated on and deducted when performed.",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["resource", "amount"],
+            "properties": { "resource": { "type": "string" }, "amount": { "type": "number" } }
+          }
+        },
+        "reagents": {
+          "type": "array",
+          "description": "Specific reagent items consumed when the ritual is performed.",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id"],
+            "properties": { "id": { "type": "string" }, "count": { "type": "integer", "minimum": 1, "default": 1 } }
+          }
+        },
+        "bindings": {
+          "type": "object",
+          "description": "The initiate(s) who perform the ritual; the check and effects reference these scopes.",
+          "additionalProperties": { "$ref": "https://palecommunion.dev/schemas/event.schema.json#/$defs/selector" }
+        },
+        "on_perform": {
+          "type": "array",
+          "description": "The inherent price paid the moment the ritual is performed, before the check (every ritual bites back).",
+          "items": { "$ref": "https://palecommunion.dev/schemas/event.schema.json#/$defs/effect" }
+        },
+        "check": { "$ref": "https://palecommunion.dev/schemas/event.schema.json#/$defs/check" },
+        "outcome": { "$ref": "https://palecommunion.dev/schemas/event.schema.json#/$defs/outcome" },
+        "on_success": { "$ref": "https://palecommunion.dev/schemas/event.schema.json#/$defs/outcome" },
+        "on_failure": { "$ref": "https://palecommunion.dev/schemas/event.schema.json#/$defs/outcome" },
+        "on_critical_success": { "$ref": "https://palecommunion.dev/schemas/event.schema.json#/$defs/outcome" },
+        "on_critical_failure": { "$ref": "https://palecommunion.dev/schemas/event.schema.json#/$defs/outcome" }
+      }
+    }
+  }
+}

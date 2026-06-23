@@ -26,6 +26,16 @@ registry. You should never need to touch C# to add an event.
 - The simulation runs schemes via `SchemeService` (start / assign / resolve) and
   `TurnSystem` (the turn loop). No scheme content ships yet — author it here when ready.
 
+## Rituals
+
+- A ritual is the supernatural tech-tree node: it must be **unlocked** (via the
+  `unlock_ritual` effect), costs Lore/reagents and initiates, and resolves at once into
+  powerful effects and dangerous side effects. Files are arrays conforming to
+  `schemas/ritual.schema.json`, which also reuses the shared event vocabulary.
+- `on_perform` is the inherent price paid the instant it is cast (every ritual bites
+  back); `reagents` lists specific reagent items consumed. Put files under
+  `content/rituals/`. The simulation runs rituals via `RitualService`.
+
 ## The content registry
 
 `content/registry.json` lists the valid ids for each open content category
