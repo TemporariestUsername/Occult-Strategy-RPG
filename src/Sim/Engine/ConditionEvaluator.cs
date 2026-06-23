@@ -79,9 +79,14 @@ public static class ConditionEvaluator
                 return Compare(state.PatronRelationships.GetValueOrDefault(c.Id ?? string.Empty),
                     AsDouble(c.Value) ?? 0.0, c.Op ?? "gte");
             case "great_work_chosen":
+                return string.IsNullOrEmpty(c.Id)
+                    ? state.ChosenGreatWork is not null
+                    : state.ChosenGreatWork == c.Id;
             case "great_work_step":
-                throw new NotSupportedException(
-                    $"Condition type '{c.Type}' arrives with the Great Work system.");
+            {
+                int step = string.IsNullOrEmpty(c.Id) || state.ChosenGreatWork == c.Id ? state.GreatWorkStep : 0;
+                return Compare(step, AsDouble(c.Value) ?? 0.0, c.Op ?? "gte");
+            }
             default:
                 return Compare(ReadScalar(state, c), AsDouble(c.Value) ?? 0.0, c.Op ?? "gte");
         }

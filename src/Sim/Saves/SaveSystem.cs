@@ -14,12 +14,13 @@ namespace PaleCommunion.Sim.Saves;
 public static class SaveSystem
 {
     /// <summary>Current on-disk save format version. Bump when the state shape changes.</summary>
-    public const int CurrentVersion = 2;
+    public const int CurrentVersion = 3;
 
     private static readonly IReadOnlyList<ISaveMigration> Migrations = new ISaveMigration[]
     {
         new Migration0To1(),
         new Migration1To2(),
+        new Migration2To3(),
     };
 
     public static string Save(GameState state)

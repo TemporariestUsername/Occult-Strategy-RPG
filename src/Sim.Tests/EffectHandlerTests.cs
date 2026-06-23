@@ -120,12 +120,13 @@ public class EffectHandlerTests
     }
 
     [Fact]
-    public void GreatWorkEffects_StillDeferred()
+    public void GreatWorkEffects_AreHandled()
     {
         var s = GameState.NewCampaign(1);
         EffectResult r = EffectEngine.Apply(s, Effects("[{\"type\":\"great_work_advance\",\"id\":\"the_opening\",\"steps\":1}]"), Rng());
-        Assert.Contains("great_work_advance", r.Unhandled);
-        Assert.False(r.FullyApplied);
+        Assert.True(r.FullyApplied);
+        Assert.Equal("the_opening", s.ChosenGreatWork);
+        Assert.Equal(1, s.GreatWorkStep);
     }
 
     [Fact]

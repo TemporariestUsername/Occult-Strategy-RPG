@@ -61,21 +61,21 @@ public class EconomyTests
     }
 
     [Fact]
-    public void DeferredEffects_AreReportedNotApplied()
+    public void UnknownEffectType_IsReportedNotApplied()
     {
         var s = GameState.NewCampaign(1);
 
-        // Most of the vocabulary is handled now; Great Work effects are still deferred
-        // (their handlers ship with that system). Economy effects around them still apply.
+        // The whole schema vocabulary is handled now, so to exercise the reporting
+        // mechanism we use a type this build does not know. Real effects around it apply.
         string json = "[" +
             "{\"type\":\"institution_influence\",\"key\":\"state\",\"amount\":15}," +
-            "{\"type\":\"great_work_advance\",\"id\":\"the_opening\",\"steps\":1}," +
+            "{\"type\":\"speculative_effect\",\"amount\":1}," +
             "{\"type\":\"attention\",\"key\":\"mundane\",\"amount\":5}]";
         EffectResult r = EffectEngine.Apply(s, Effects(json), Rng());
 
         Assert.Equal(15, s.Institutions["state"].Influence);
         Assert.Equal(5, s.AttentionMundane);
-        Assert.Contains("great_work_advance", r.Unhandled);
+        Assert.Contains("speculative_effect", r.Unhandled);
         Assert.False(r.FullyApplied);
     }
 
@@ -114,11 +114,11 @@ public class EconomyTests
     }
 
     [Fact]
-    public void UnsupportedConditionLeaf_ThrowsLoudly()
+    public void UnknownConditionType_ThrowsLoudly()
     {
-        // Great Work conditions are not implemented yet and must fail loudly, not pass silently.
+        // An unknown condition type must fail loudly, not pass silently.
         var s = GameState.NewCampaign(1);
         Assert.Throws<NotSupportedException>(
-            () => ConditionEvaluator.Evaluate(s, Cond("{\"type\":\"great_work_chosen\",\"id\":\"the_opening\"}"), Rng()));
+            () => ConditionEvaluator.Evaluate(s, Cond("{\"type\":\"speculative_condition\"}"), Rng()));
     }
 }

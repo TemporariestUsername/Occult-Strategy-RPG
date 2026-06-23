@@ -29,6 +29,7 @@ public static class EffectEngine
         "add_trait", "remove_trait", "member_corruption", "member_status", "kill_member",
         "recruit", "relationship", "grant_relic", "remove_relic", "grant_reagent", "remove_reagent",
         "gain_secret", "reveal_secret", "patron_relationship", "unlock_ritual", "unlock_scheme",
+        "great_work_advance", "great_work_set_step",
         "tier_change", "queue_event", "end_game",
     };
 
@@ -92,6 +93,10 @@ public static class EffectEngine
             case "patron_relationship": AddPatron(s, Require(e.Id, "patron_relationship.id"), e.Amount ?? 0); return true;
             case "unlock_ritual": s.UnlockedRituals.Add(Require(e.Id, "unlock_ritual.id")); return true;
             case "unlock_scheme": s.UnlockedSchemes.Add(Require(e.Id, "unlock_scheme.id")); return true;
+
+            // The Great Work (endgame progression).
+            case "great_work_advance": AdvanceGreatWork(s, e.Id, e.Steps ?? 1); return true;
+            case "great_work_set_step": SetGreatWorkStep(s, e.Id, (int)Math.Round(ConditionEvaluator.AsDouble(e.Value) ?? 0)); return true;
 
             // Progression and flow.
             case "tier_change": s.Tier = Math.Max(0, s.Tier + (int)Math.Round(e.Amount ?? 0)); return true;
@@ -182,6 +187,47 @@ public static class EffectEngine
 
     private static void AddPatron(GameState s, string id, double amount) =>
         s.PatronRelationships[id] = s.PatronRelationships.GetValueOrDefault(id) + amount;
+
+    private static void AdvanceGreatWork(GameState s, string? id, int steps)
+    {
+        ResolveGreatWork(s, id);
+        s.GreatWorkStep += steps;
+    }
+
+    private static void SetGreatWorkStep(GameState s, string? id, int step)
+    {
+        ResolveGreatWork(s, id);
+        s.GreatWorkStep = step;
+    }
+
+    /// <summary>
+    /// Resolve which Great Work an effect targets, committing to it if none is chosen
+    /// yet. Endgames are mutually exclusive, so naming a different Great Work once one
+    /// is chosen is an authoring error.
+    /// </summary>
+    private static void ResolveGreatWork(GameState s, string? id)
+    {
+        if (string.IsNullOrEmpty(id))
+        {
+            if (s.ChosenGreatWork is null)
+            {
+                throw new ArgumentException("Great Work effect needs an 'id'; none has been chosen yet.");
+            }
+
+            return;
+        }
+
+        if (s.ChosenGreatWork is null)
+        {
+            s.ChosenGreatWork = id;
+        }
+        else if (s.ChosenGreatWork != id)
+        {
+            throw new ArgumentException(
+                $"Great Work '{id}' conflicts with the already-chosen '{s.ChosenGreatWork}' " +
+                "(endgames are mutually exclusive).");
+        }
+    }
 
     private static Member Bound(BindingContext? ctx, string? scope) =>
         ctx is not null && scope is not null && ctx.TryGet(scope, out Member? m) && m is not null

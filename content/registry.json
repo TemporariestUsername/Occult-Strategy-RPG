@@ -15,6 +15,6 @@
   "secrets": ["magistrate_second_name", "rival_true_name"],
   "relics": [],
   "reagent_items": [],
-  "great_works": [],
+  "great_works": ["ascension", "dominion", "the_opening", "the_long_game"],
   "recruit_templates": ["state_official"]
 }

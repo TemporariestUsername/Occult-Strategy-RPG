@@ -51,6 +51,10 @@ public sealed class GameState
     public string? Ending { get; set; }
     public bool IsGameOver { get; set; }
 
+    // The Great Work (endgame). Mutually exclusive: at most one chosen per campaign.
+    public string? ChosenGreatWork { get; set; }
+    public int GreatWorkStep { get; set; }
+
     public const string DefaultCity = "Boston";
     public const int StartYear = 1905;
     public const double MeterMin = 0;
@@ -131,6 +135,8 @@ public sealed class GameState
                 ReagentItems[id] = 0;
             }
         }
+
+        GreatWorkStep = Math.Max(0, GreatWorkStep);
     }
 
     public static double ClampMeter(double value) => Math.Clamp(value, MeterMin, MeterMax);

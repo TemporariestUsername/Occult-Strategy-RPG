@@ -1,22 +1,23 @@
 namespace PaleCommunion.Sim.Tests;
 
-/// <summary>Locates repo content from the test output directory by walking up the tree.</summary>
+/// <summary>Locates repo files from the test output directory by walking up to the repo root.</summary>
 internal static class TestPaths
 {
-    public static string Content(string relative)
+    public static string RepoFile(string relative)
     {
         DirectoryInfo? dir = new(AppContext.BaseDirectory);
         while (dir is not null)
         {
-            string candidate = Path.Combine(dir.FullName, "content", relative);
-            if (File.Exists(candidate))
+            if (File.Exists(Path.Combine(dir.FullName, "schemas", "event.schema.json")))
             {
-                return candidate;
+                return Path.Combine(dir.FullName, relative);
             }
 
             dir = dir.Parent;
         }
 
-        throw new FileNotFoundException($"Could not locate content/{relative} from {AppContext.BaseDirectory}");
+        throw new FileNotFoundException($"Could not locate repo root from {AppContext.BaseDirectory}");
     }
+
+    public static string Content(string relative) => RepoFile(Path.Combine("content", relative));
 }
