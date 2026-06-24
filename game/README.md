@@ -20,8 +20,8 @@ contains **no game rules** (CLAUDE.md architecture law 2).
    **Import & Edit**. (Next time it's in your project list — just open it.) On first
    import Godot creates a local `.godot/` cache; that's normal and git-ignored.
 3. **Build the C# code.** Press the **Build** button — the **hammer icon** at the
-   top-right of the editor — and wait for it to finish. Godot compiles `game.csproj`,
-   which references `Sim`. Do this after pulling C# changes; the editor also builds
+   top-right of the editor — and wait for it to finish. Godot compiles
+   `ThePaleCommunion.Game.csproj`, which references `Sim`. Do this after pulling C# changes; the editor also builds
    automatically the first time you run.
    - *No-editor alternative:* `dotnet build game` from a terminal.
 4. **Run.** Press **F5** (or the **▶ Play** button, top-right). The main scene
@@ -60,6 +60,10 @@ then *Advance Turn* a few times to watch it resolve.
 - `scripts/ContentCatalog.cs` — host/IO glue that loads events, schemes, and rituals
   from the repo `content/` folder into the Sim content models.
 - `scenes/Main.tscn` — the main scene: a single `Control` running `Main.cs`.
+- `ThePaleCommunion.Game.csproj` / `ThePaleCommunion.Game.sln` — the C# project and
+  its solution. Their base name **must** match `project.godot`'s
+  `dotnet/project/assembly_name`, or the editor builds the wrong (or an empty)
+  assembly and the scene fails with *"the associated class could not be found"*.
 
 ## Troubleshooting
 
@@ -72,7 +76,8 @@ then *Advance Turn* a few times to watch it resolve.
   at the repo root, beside `game/`. If you moved `game/`, the runtime can't find
   `../content` (see `ResolveContentDir()` in `Main.cs`).
 - **Import fails / C# features missing.** This project targets Godot **4.6** (its
-  `game.csproj` uses `Godot.NET.Sdk/4.6.0`); older editors may not open it.
+  `ThePaleCommunion.Game.csproj` uses `Godot.NET.Sdk/4.6.0`); older editors may not
+  open it.
 
 ## Known gaps
 

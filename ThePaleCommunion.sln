@@ -13,7 +13,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tools", "tools", "{9743757F
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ContentValidator", "tools\ContentValidator\ContentValidator.csproj", "{B946F66C-8A14-48CA-8AAA-922D9D66B3C2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "game", "game\game.csproj", "{32D3C23A-785E-4C0F-ACA6-FD5B38D0E226}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ThePaleCommunion.Game", "game\ThePaleCommunion.Game.csproj", "{32D3C23A-785E-4C0F-ACA6-FD5B38D0E226}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
