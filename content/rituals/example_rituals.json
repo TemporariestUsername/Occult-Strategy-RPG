@@ -1,0 +1,36 @@
+[
+  {
+    "id": "the_borrowed_name",
+    "title": "The Borrowed Name",
+    "description": "{actor.name} speaks a name that was never theirs to hold.",
+    "cost": [{ "resource": "lore", "amount": 10 }],
+    "reagents": [{ "id": "graveyard_dirt", "count": 1 }],
+    "bindings": {
+      "actor": {
+        "from": "member",
+        "require": [{ "type": "scope_skill", "key": "Ritual" }],
+        "prefer": "highest",
+        "by": "Will"
+      }
+    },
+    "on_perform": [
+      { "type": "order_corruption", "amount": 5 },
+      { "type": "attention", "key": "occult", "amount": 5 }
+    ],
+    "check": { "scope": "actor", "attribute": "Will", "skill": "Ritual", "difficulty": 8 },
+    "on_success": {
+      "result_text": "The knowledge arrives whole, as if remembered rather than learned.",
+      "effects": [
+        { "type": "resource", "key": "lore", "amount": 20 },
+        { "type": "member_corruption", "scope": "actor", "amount": 10 }
+      ]
+    },
+    "on_failure": {
+      "result_text": "Something answers in {actor.name}'s voice, and will not stop.",
+      "effects": [
+        { "type": "member_status", "scope": "actor", "status": "maddened" },
+        { "type": "attention", "key": "occult", "amount": 15 }
+      ]
+    }
+  }
+]

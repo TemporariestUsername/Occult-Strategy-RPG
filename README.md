@@ -244,7 +244,7 @@ the bulk of the content (writing) are the major pieces still ahead.
 | Scheme / timer action economy + turn loop (`SchemeService`, `TurnSystem`) | ✅ unit-tested |
 | Rituals — perform, Lore/reagent cost, inherent price + side effects (`RitualService`) | ✅ unit-tested |
 | Event pool / scheduler — eligibility, priority + weighted draw, cooldowns; threats as pool events (`EventScheduler`) | ✅ unit-tested |
-| Content validator (`tools/ContentValidator`) | ✅ working |
+| Content validator — events, schemes, rituals (`tools/ContentValidator`) | ✅ working |
 | Boston as the v1 setting | ✅ baked into the design and `NewCampaign` |
 | Binding pools — `member` ✅, `recruit_pool` ✅; `rival_order` / `npc` / `institution_contact` | ⏳ pending |
 | `game/` Godot project & UI | ⛔ not started |

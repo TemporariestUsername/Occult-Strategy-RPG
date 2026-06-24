@@ -1,0 +1,40 @@
+[
+  {
+    "id": "intrigue.infiltrate_police",
+    "title": "Infiltrate the Police",
+    "description": "{actor.name} cultivates a contact inside the State's precinct house.",
+    "category": "state",
+    "duration": 3,
+    "cost": [{ "resource": "funds", "amount": 20 }],
+    "bindings": {
+      "actor": {
+        "from": "member",
+        "require": [{ "type": "scope_skill", "key": "Infiltration" }],
+        "prefer": "highest",
+        "by": "Guile"
+      }
+    },
+    "check": { "scope": "actor", "attribute": "Guile", "skill": "Infiltration", "difficulty": 12 },
+    "on_success": {
+      "result_text": "A friendly badge, and a file that goes missing on request.",
+      "effects": [{ "type": "institution_influence", "key": "state", "amount": 10 }]
+    },
+    "on_failure": {
+      "result_text": "{actor.name} is made, and roughed up for the trouble.",
+      "effects": [
+        { "type": "attention", "key": "mundane", "amount": 10 },
+        { "type": "member_status", "scope": "actor", "status": "injured" }
+      ]
+    }
+  },
+  {
+    "id": "sanctum.transcribe_lore",
+    "title": "Transcribe in the Scriptorium",
+    "description": "Quiet hours spent copying forbidden pages by candlelight.",
+    "duration": 2,
+    "outcome": {
+      "result_text": "The work accrues, page by careful page.",
+      "effects": [{ "type": "resource", "key": "lore", "amount": 5 }]
+    }
+  }
+]

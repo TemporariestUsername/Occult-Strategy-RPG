@@ -10,11 +10,11 @@
     "veteran", "addict", "devout", "traitorous", "persuasive"
   ],
   "rituals": ["the_borrowed_name"],
-  "schemes": [],
+  "schemes": ["intrigue.infiltrate_police", "sanctum.transcribe_lore"],
   "patrons": ["the_listener"],
   "secrets": ["magistrate_second_name", "rival_true_name"],
   "relics": [],
-  "reagent_items": [],
+  "reagent_items": ["graveyard_dirt"],
   "great_works": ["ascension", "dominion", "the_opening", "the_long_game"],
   "recruit_templates": ["state_official"]
 }

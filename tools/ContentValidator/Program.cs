@@ -14,77 +14,39 @@ static int Run()
 
     string schemaPath = Path.Combine(root, "schemas", "event.schema.json");
     string registryPath = Path.Combine(root, "content", "registry.json");
-    string eventsDir = Path.Combine(root, "content", "events");
-
     if (!File.Exists(registryPath))
     {
         Console.Error.WriteLine($"Missing content registry: {registryPath}");
         return 2;
     }
 
+    // Schemes and rituals reuse the event vocabulary, so one SchemaVocabulary serves all.
     SchemaVocabulary vocab = SchemaVocabulary.Load(schemaPath);
     ContentRegistry registry = ContentRegistry.Load(registryPath);
 
-    // Event content lives under content/events/. Other content types (schemes, rituals)
-    // have their own schemas and validation, added when their content lands.
-    List<string> files = Directory.Exists(eventsDir)
-        ? Directory.EnumerateFiles(eventsDir, "*.json", SearchOption.AllDirectories)
-            .OrderBy(f => f, StringComparer.Ordinal)
-            .ToList()
-        : new List<string>();
-
     var diagnostics = new List<Diagnostic>();
-    var cards = new List<(string File, JsonElement Card)>();
-    var allEventIds = new HashSet<string>(StringComparer.Ordinal);
-    var seenIds = new HashSet<string>(StringComparer.Ordinal);
     var docs = new List<JsonDocument>();
 
-    // First pass: parse every file and collect event ids (so cross-file
-    // next_event references can be checked in the second pass).
-    foreach (string file in files)
+    List<ContentItem> events = LoadType(root, "events", diagnostics, docs);
+    List<ContentItem> schemes = LoadType(root, "schemes", diagnostics, docs);
+    List<ContentItem> rituals = LoadType(root, "rituals", diagnostics, docs);
+
+    var allEventIds = new HashSet<string>(
+        events.Select(i => i.Id).Where(id => id.Length > 0), StringComparer.Ordinal);
+
+    foreach (ContentItem item in events)
     {
-        string rel = Path.GetRelativePath(root, file);
-        JsonDocument doc;
-        try
-        {
-            doc = JsonDocument.Parse(File.ReadAllText(file));
-        }
-        catch (JsonException ex)
-        {
-            diagnostics.Add(new Diagnostic(Severity.Error, rel, string.Empty, $"invalid JSON: {ex.Message}"));
-            continue;
-        }
-
-        docs.Add(doc);
-
-        if (doc.RootElement.ValueKind != JsonValueKind.Array)
-        {
-            diagnostics.Add(new Diagnostic(Severity.Error, rel, string.Empty, "content file must be a JSON array of event cards"));
-            continue;
-        }
-
-        foreach (JsonElement card in doc.RootElement.EnumerateArray())
-        {
-            cards.Add((rel, card));
-            if (card.ValueKind == JsonValueKind.Object
-                && card.TryGetProperty("id", out JsonElement idEl)
-                && idEl.ValueKind == JsonValueKind.String)
-            {
-                string id = idEl.GetString()!;
-                if (!seenIds.Add(id))
-                {
-                    diagnostics.Add(new Diagnostic(Severity.Error, rel, id, $"duplicate event id '{id}'"));
-                }
-
-                allEventIds.Add(id);
-            }
-        }
+        new EventCardValidator(vocab, registry, allEventIds, diagnostics, item.File).Validate(item.Element);
     }
 
-    // Second pass: validate every card.
-    foreach ((string file, JsonElement card) in cards)
+    foreach (ContentItem item in schemes)
     {
-        new EventCardValidator(vocab, registry, allEventIds, diagnostics, file).Validate(card);
+        new SchemeValidator(vocab, registry, allEventIds, diagnostics, item.File).Validate(item.Element);
+    }
+
+    foreach (ContentItem item in rituals)
+    {
+        new RitualValidator(vocab, registry, allEventIds, diagnostics, item.File).Validate(item.Element);
     }
 
     foreach (JsonDocument doc in docs)
@@ -108,9 +70,65 @@ static int Run()
         Console.WriteLine();
     }
 
+    int total = events.Count + schemes.Count + rituals.Count;
     Console.WriteLine(
-        $"Validated {cards.Count} card(s) across {files.Count} file(s): {errors} error(s), {warnings} warning(s).");
+        $"Validated {total} item(s) ({events.Count} event(s), {schemes.Count} scheme(s), {rituals.Count} ritual(s)): " +
+        $"{errors} error(s), {warnings} warning(s).");
     return errors > 0 ? 1 : 0;
+}
+
+// Parse every JSON array under content/<typeDir>/, collecting each item with its id and
+// flagging duplicate ids within the type.
+static List<ContentItem> LoadType(string root, string typeDir, List<Diagnostic> diagnostics, List<JsonDocument> docs)
+{
+    var items = new List<ContentItem>();
+    string dir = Path.Combine(root, "content", typeDir);
+    if (!Directory.Exists(dir))
+    {
+        return items;
+    }
+
+    var seen = new HashSet<string>(StringComparer.Ordinal);
+    foreach (string file in Directory.EnumerateFiles(dir, "*.json", SearchOption.AllDirectories)
+        .OrderBy(f => f, StringComparer.Ordinal))
+    {
+        string rel = Path.GetRelativePath(root, file);
+        JsonDocument doc;
+        try
+        {
+            doc = JsonDocument.Parse(File.ReadAllText(file));
+        }
+        catch (JsonException ex)
+        {
+            diagnostics.Add(new Diagnostic(Severity.Error, rel, string.Empty, $"invalid JSON: {ex.Message}"));
+            continue;
+        }
+
+        docs.Add(doc);
+        if (doc.RootElement.ValueKind != JsonValueKind.Array)
+        {
+            diagnostics.Add(new Diagnostic(Severity.Error, rel, string.Empty, $"{typeDir} file must be a JSON array"));
+            continue;
+        }
+
+        foreach (JsonElement element in doc.RootElement.EnumerateArray())
+        {
+            string id = element.ValueKind == JsonValueKind.Object
+                        && element.TryGetProperty("id", out JsonElement idEl)
+                        && idEl.ValueKind == JsonValueKind.String
+                ? idEl.GetString()!
+                : string.Empty;
+
+            if (id.Length > 0 && !seen.Add(id))
+            {
+                diagnostics.Add(new Diagnostic(Severity.Error, rel, id, $"duplicate {typeDir} id '{id}'"));
+            }
+
+            items.Add(new ContentItem(rel, element, id));
+        }
+    }
+
+    return items;
 }
 
 static string? FindRepoRoot(string start)
@@ -128,3 +146,5 @@ static string? FindRepoRoot(string start)
 
     return null;
 }
+
+internal sealed record ContentItem(string File, JsonElement Element, string Id);

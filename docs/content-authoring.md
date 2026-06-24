@@ -24,7 +24,8 @@ registry. You should never need to touch C# to add an event.
 - Put scheme files under `content/schemes/`. A scheme's optional `category` is a free
   string validated against the registry; register new ids as you would for events.
 - The simulation runs schemes via `SchemeService` (start / assign / resolve) and
-  `TurnSystem` (the turn loop). No scheme content ships yet — author it here when ready.
+  `TurnSystem` (the turn loop). See `content/schemes/example_schemes.json` for worked
+  examples.
 
 ## Rituals
 
@@ -34,7 +35,8 @@ registry. You should never need to touch C# to add an event.
   `schemas/ritual.schema.json`, which also reuses the shared event vocabulary.
 - `on_perform` is the inherent price paid the instant it is cast (every ritual bites
   back); `reagents` lists specific reagent items consumed. Put files under
-  `content/rituals/`. The simulation runs rituals via `RitualService`.
+  `content/rituals/`; see `content/rituals/example_rituals.json`. The simulation runs
+  rituals via `RitualService`.
 
 ## The content registry
 
@@ -51,8 +53,8 @@ registry. Attributes and skills are **not** in the registry — they are fixed i
 dotnet run --project tools/ContentValidator
 ```
 
-It validates the event files under `content/events/`; other content types (schemes,
-rituals) get their own validation as that content lands.
+It validates events, schemes, and rituals (under `content/events/`, `content/schemes/`,
+`content/rituals/`) against their schemas and the registry.
 
 - **Errors** (exit code 1) are things wrong regardless of how much content exists
   yet: a malformed id, an unknown effect/condition `type`, an unknown
