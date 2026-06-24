@@ -13,7 +13,20 @@
     <Nullable>enable</Nullable>
     <LangVersion>latest</LangVersion>
     <EnableDynamicLoading>true</EnableDynamicLoading>
+
+    <!--
+      game/ is a subfolder of a larger monorepo. By default Godot.NET.Sdk compiles
+      every *.cs under the project directory; if the repo (src/, tools/, …) is ever
+      nested or copied beneath game/, that pulls the whole codebase into this assembly
+      and the build fails with hundreds of errors. Restrict compilation to our own
+      scripts so the presentation project only ever builds its own code.
+    -->
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="scripts/**/*.cs" />
+  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="../src/Sim/Sim.csproj" />

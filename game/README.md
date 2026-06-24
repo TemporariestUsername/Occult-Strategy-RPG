@@ -13,8 +13,10 @@ contains **no game rules** (CLAUDE.md architecture law 2).
 ## Run it in Godot (step by step)
 
 1. **Get the repo intact.** Clone or open this repository so that `game/` sits next
-   to `content/` at the repo root. The game loads authored content from `../content`
-   at runtime, so keep the layout — don't copy `game/` out on its own.
+   to `src/`, `tools/`, and `content/` at the repo root. The C# project references
+   `../src/Sim` and loads content from `../content` at runtime, so keep that layout:
+   never copy `game/` out on its own, and **never nest the repo (or a second clone)
+   inside `game/`** — the Godot project folder must contain *only* the game.
 2. **Import the project.** Launch Godot → in the **Project Manager** click
    **Import** → browse to this `game/` folder → select **`project.godot`** →
    **Import & Edit**. (Next time it's in your project list — just open it.) On first
@@ -72,6 +74,13 @@ then *Advance Turn* a few times to watch it resolve.
 - **Build errors after a pull.** Press **Build** (hammer) again, or run
   `dotnet build game` in a terminal for the full compiler output. If the editor still
   references stale assemblies, close and reopen it.
+- **Hundreds of build errors** — `List<>`, `Dictionary<>`, `Fact`, or `Xunit` "could
+  not be found", and `Sim.csproj does not exist`. The Godot project folder has the
+  rest of the repo nested inside it, so the C# build is trying to compile `src/`,
+  `src/Sim.Tests/`, and `tools/` into the game. The project folder must contain *only*
+  `game/`, with `src/`, `tools/`, and `content/` as its **siblings** one level up —
+  never a nested repo or a second clone underneath `game/`. A fresh `git clone`,
+  opened at its `game/` subfolder, is the clean reset.
 - **It runs but no events or schemes appear.** The `content/` folder must be present
   at the repo root, beside `game/`. If you moved `game/`, the runtime can't find
   `../content` (see `ResolveContentDir()` in `Main.cs`).
