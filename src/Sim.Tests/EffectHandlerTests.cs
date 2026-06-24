@@ -58,6 +58,10 @@ public class EffectHandlerTests
         Assert.Equal(2, s.Members.Count);
         Assert.Equal("state_official_1", s.Members[0].Id);
         Assert.Equal("state_official_2", s.Members[1].Id);
+
+        // Recruits are real people now, not blank shells: named, with generated stats.
+        Assert.All(s.Members, m => Assert.False(string.IsNullOrWhiteSpace(m.Name)));
+        Assert.Equal(5, s.Members[0].Attributes.Count);
     }
 
     [Fact]

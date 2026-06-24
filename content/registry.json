@@ -10,11 +10,16 @@
     "veteran", "addict", "devout", "traitorous", "persuasive"
   ],
   "rituals": ["the_borrowed_name"],
-  "schemes": ["intrigue.infiltrate_police", "sanctum.transcribe_lore"],
+  "schemes": [
+    "intrigue.infiltrate_police", "sanctum.transcribe_lore",
+    "sanctum.solicit_donations", "sanctum.keep_the_faith", "sanctum.go_to_ground",
+    "recruiting.hold_a_seance", "church.minister_to_the_poor", "underworld.work_the_waterfront",
+    "university.haunt_the_stacks", "press.plant_a_story"
+  ],
   "patrons": ["the_listener"],
   "secrets": ["magistrate_second_name", "rival_true_name"],
   "relics": [],
   "reagent_items": ["graveyard_dirt"],
   "great_works": ["ascension", "dominion", "the_opening", "the_long_game"],
-  "recruit_templates": ["state_official"]
+  "recruit_templates": ["state_official", "stray_seeker", "curious_soul"]
 }

@@ -1,0 +1,284 @@
+[
+  {
+    "id": "city.a_knock_after_midnight",
+    "title": "A Knock After Midnight",
+    "category": "intrigue",
+    "weight": 3,
+    "repeatable": true,
+    "cooldown_turns": 5,
+    "trigger": { "type": "pool" },
+    "body": "Past midnight, three soft knocks at the apothecary's side door — the old signal, or near enough. A stranger waits in the rain, hollow-eyed, and says they have been dreaming of the Signs.",
+    "choices": [
+      {
+        "id": "admit",
+        "label": "Admit them. The order grows.",
+        "outcome": {
+          "result_text": "They cross the threshold and do not look back. Another mouth, another pair of hands, another way to be found.",
+          "effects": [
+            { "type": "recruit", "template": "stray_seeker", "count": 1 },
+            { "type": "veil", "amount": -5 }
+          ]
+        }
+      },
+      {
+        "id": "test_them",
+        "label": "Make them wait, and watch how they wait.",
+        "outcome": {
+          "result_text": "Most would have fled by now. This one stands in the rain until dawn, and is admitted with a colder welcome.",
+          "effects": [
+            { "type": "recruit", "template": "stray_seeker", "count": 1 },
+            { "type": "devotion", "amount": 3 },
+            { "type": "veil", "amount": -2 }
+          ]
+        }
+      },
+      {
+        "id": "turn_away",
+        "label": "Turn them away. Caution is survival.",
+        "outcome": {
+          "result_text": "The door closes. Whatever they were dreaming, they will dream it elsewhere now.",
+          "effects": [{ "type": "veil", "amount": 5 }]
+        }
+      }
+    ]
+  },
+  {
+    "id": "city.the_gas_lamps_gutter",
+    "title": "The Gas Lamps Gutter",
+    "category": "random",
+    "weight": 2,
+    "repeatable": true,
+    "cooldown_turns": 8,
+    "trigger": { "type": "pool" },
+    "body": "For three nights running, the lamps along the order's street burn low and blue at the same hour, and the dogs will not go out. Something in the city is paying attention, or asking to be.",
+    "choices": [
+      {
+        "id": "investigate",
+        "label": "Walk the street at that hour, and look.",
+        "outcome": {
+          "result_text": "You learn a little of the shape of it. Knowledge always costs more than it admits.",
+          "effects": [
+            { "type": "resource", "key": "lore", "amount": 4 },
+            { "type": "attention", "key": "occult", "amount": 4 }
+          ]
+        }
+      },
+      {
+        "id": "hold_vigil",
+        "label": "Hold a vigil and let it pass unanswered.",
+        "outcome": {
+          "result_text": "The order keeps the watch together, and is the stronger for the fear shared.",
+          "effects": [
+            { "type": "devotion", "amount": 5 },
+            { "type": "resource", "key": "reagents", "amount": 1 }
+          ]
+        }
+      },
+      {
+        "id": "ignore",
+        "label": "Draw the curtains. Notice nothing.",
+        "outcome": {
+          "result_text": "On the fourth night the lamps burn ordinary again. Perhaps that is worse.",
+          "effects": [{ "type": "veil", "amount": 3 }]
+        }
+      }
+    ]
+  },
+  {
+    "id": "patron.a_benefactors_interest",
+    "title": "A Benefactor's Interest",
+    "category": "patron",
+    "weight": 2,
+    "repeatable": true,
+    "cooldown_turns": 10,
+    "trigger": { "type": "pool" },
+    "body": "A note on heavy cream stock, no signature: an admirer of the order's 'researches' wishes to be useful, and asks nothing in return. The phrase 'nothing in return' is underlined.",
+    "choices": [
+      {
+        "id": "accept_openly",
+        "label": "Accept gladly, and let the gift be seen.",
+        "outcome": {
+          "result_text": "The money is real and immediate. So, now, is the thread that ties the order to a hand it cannot see.",
+          "effects": [
+            { "type": "resource", "key": "funds", "amount": 60 },
+            { "type": "veil", "amount": -5 }
+          ]
+        }
+      },
+      {
+        "id": "accept_discreetly",
+        "label": "Accept a smaller sum, quietly.",
+        "outcome": {
+          "result_text": "Less coin, fewer questions. The benefactor seems amused by the caution.",
+          "effects": [{ "type": "resource", "key": "funds", "amount": 30 }]
+        }
+      },
+      {
+        "id": "decline",
+        "label": "Return the note unanswered.",
+        "outcome": {
+          "result_text": "Refusal is its own statement. The order keeps its debts to itself, for now.",
+          "effects": [
+            { "type": "devotion", "amount": 3 },
+            { "type": "veil", "amount": 4 }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "id": "threat.the_watch_and_ward",
+    "title": "The Watch and Ward Society",
+    "category": "threat",
+    "weight": 2,
+    "repeatable": true,
+    "cooldown_turns": 8,
+    "trigger": {
+      "type": "pool",
+      "conditions": { "type": "attention", "key": "mundane", "op": "gte", "value": 10 }
+    },
+    "body": "Boston's self-appointed guardians of public morals have noticed the order's gatherings. A pamphlet names no names — yet — but describes the side door, the late hours, the smell of strange incense.",
+    "choices": [
+      {
+        "id": "lay_low",
+        "label": "Cancel the gatherings until it blows over.",
+        "outcome": {
+          "result_text": "The work pauses; the watchers lose the thread. Caution buys quiet.",
+          "effects": [
+            { "type": "veil", "amount": 8 },
+            { "type": "attention", "key": "mundane", "amount": -10 }
+          ]
+        }
+      },
+      {
+        "id": "bribe",
+        "label": "Find the pamphleteer a reason to lose interest.",
+        "cost": [{ "resource": "funds", "amount": 40 }],
+        "outcome": {
+          "result_text": "Every crusader has a price or a secret. This one had both.",
+          "effects": [{ "type": "attention", "key": "mundane", "amount": -15 }]
+        }
+      },
+      {
+        "id": "defy",
+        "label": "Meet anyway. Let them see the order is unafraid.",
+        "outcome": {
+          "result_text": "Defiance hardens the faithful and sharpens the watchers in equal measure.",
+          "effects": [
+            { "type": "devotion", "amount": 5 },
+            { "type": "veil", "amount": -3 },
+            { "type": "attention", "key": "mundane", "amount": 5 }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "id": "institution.a_paper_worth_reading",
+    "title": "A Paper Worth Reading",
+    "category": "institution",
+    "weight": 2,
+    "repeatable": true,
+    "cooldown_turns": 6,
+    "trigger": { "type": "pool" },
+    "bindings": {
+      "actor": { "from": "member", "prefer": "highest", "by": "Intellect" }
+    },
+    "body": "{actor.name} brings a monograph from the University's psychical society — credulous, mostly, but a single cited footnote points somewhere the authors clearly never dared to follow.",
+    "choices": [
+      {
+        "id": "pursue",
+        "label": "Have {actor.name} follow the footnote.",
+        "check": { "scope": "actor", "attribute": "Intellect", "skill": "Lore", "difficulty": 9 },
+        "on_success": {
+          "result_text": "The trail is real, and it is patient, and now it is the order's.",
+          "effects": [{ "type": "resource", "key": "lore", "amount": 10 }]
+        },
+        "on_failure": {
+          "result_text": "The trail doubles back on the reader. {actor.name} sleeps badly for a week, and something is now listening.",
+          "effects": [
+            { "type": "resource", "key": "lore", "amount": 2 },
+            { "type": "attention", "key": "occult", "amount": 6 }
+          ]
+        }
+      },
+      {
+        "id": "file_away",
+        "label": "File it away. Some footnotes are baited.",
+        "outcome": {
+          "result_text": "The monograph goes into the locked drawer, with the others the order was wise enough not to read.",
+          "effects": [{ "type": "veil", "amount": 2 }]
+        }
+      }
+    ]
+  },
+  {
+    "id": "high_society.an_invitation",
+    "title": "An Invitation to Beacon Hill",
+    "category": "institution",
+    "weight": 2,
+    "repeatable": true,
+    "cooldown_turns": 10,
+    "trigger": { "type": "pool" },
+    "body": "An engraved card invites the order's most presentable face to a Back Bay salon — the kind where fortunes and reputations are made over sherry, and the hostess collects unusual people the way others collect porcelain.",
+    "choices": [
+      {
+        "id": "attend",
+        "label": "Attend in person, and charm the room.",
+        "outcome": {
+          "result_text": "The order is, for an evening, fashionable. Doors open that money alone cannot.",
+          "effects": [
+            { "type": "institution_influence", "key": "high_society", "amount": 8 },
+            { "type": "veil", "amount": -3 }
+          ],
+          "next_event": "high_society.the_morning_after",
+          "next_event_delay": 1
+        }
+      },
+      {
+        "id": "proxy",
+        "label": "Send a careful proxy who says little.",
+        "outcome": {
+          "result_text": "A name is noted, a face half-remembered. A foothold, no more.",
+          "effects": [{ "type": "institution_influence", "key": "high_society", "amount": 3 }]
+        }
+      },
+      {
+        "id": "decline",
+        "label": "Decline. Brahmins remember a snub forever.",
+        "outcome": {
+          "result_text": "Better invisible than interesting. The card goes into the fire.",
+          "effects": [{ "type": "veil", "amount": 3 }]
+        }
+      }
+    ]
+  },
+  {
+    "id": "high_society.the_morning_after",
+    "title": "The Morning After",
+    "category": "chain",
+    "trigger": { "type": "scripted" },
+    "body": "A second card arrives by the morning post, in a different hand: the hostess found the order's representative 'thrillingly strange', and would like to introduce certain friends with appetites the ordinary world cannot satisfy.",
+    "choices": [
+      {
+        "id": "press_advantage",
+        "label": "Accept, and cultivate the appetites.",
+        "outcome": {
+          "result_text": "The order acquires patrons who mistake it for a diversion. Useful — so long as the mistake holds.",
+          "effects": [
+            { "type": "institution_influence", "key": "high_society", "amount": 6 },
+            { "type": "attention", "key": "mundane", "amount": 4 }
+          ]
+        }
+      },
+      {
+        "id": "retreat",
+        "label": "Retreat gracefully while the impression is good.",
+        "outcome": {
+          "result_text": "Leave them wanting. The order withdraws into flattering rumour.",
+          "effects": [{ "type": "veil", "amount": 5 }]
+        }
+      }
+    ]
+  }
+]

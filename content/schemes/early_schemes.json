@@ -1,0 +1,164 @@
+[
+  {
+    "id": "sanctum.solicit_donations",
+    "title": "Solicit Quiet Donations",
+    "description": "A letter here, a luncheon there. The order's coffers do not fill themselves.",
+    "duration": 2,
+    "repeatable": true,
+    "cooldown_turns": 1,
+    "outcome": {
+      "result_text": "Envelopes arrive, unmarked and unremarked. The ledger swells a little.",
+      "effects": [{ "type": "resource", "key": "funds", "amount": 30 }]
+    }
+  },
+  {
+    "id": "sanctum.keep_the_faith",
+    "title": "Keep the Faith",
+    "description": "Readings, rites, and the small disciplines that bind initiates to the work.",
+    "duration": 2,
+    "repeatable": true,
+    "cooldown_turns": 1,
+    "outcome": {
+      "result_text": "The candles are tended and the oaths renewed. The order holds together.",
+      "effects": [
+        { "type": "devotion", "amount": 8 },
+        { "type": "order_corruption", "amount": 1 }
+      ]
+    }
+  },
+  {
+    "id": "sanctum.go_to_ground",
+    "title": "Go to Ground",
+    "description": "Suspend the visible work and let the city's interest cool.",
+    "duration": 2,
+    "repeatable": true,
+    "cooldown_turns": 2,
+    "outcome": {
+      "result_text": "For a while the order is only rumour again, and rumour forgets.",
+      "effects": [
+        { "type": "veil", "amount": 10 },
+        { "type": "attention", "key": "mundane", "amount": -8 },
+        { "type": "attention", "key": "occult", "amount": -6 }
+      ]
+    }
+  },
+  {
+    "id": "recruiting.hold_a_seance",
+    "title": "Hold a Séance for the Grieving",
+    "description": "The bereaved come seeking the dead. Some of them stay seeking more.",
+    "duration": 2,
+    "repeatable": true,
+    "cooldown_turns": 3,
+    "cost": [{ "resource": "funds", "amount": 25 }],
+    "outcome": {
+      "result_text": "Most leave comforted. One lingers at the door, and asks what else is true.",
+      "effects": [
+        { "type": "recruit", "template": "curious_soul", "count": 1 },
+        { "type": "resource", "key": "lore", "amount": 3 },
+        { "type": "attention", "key": "occult", "amount": 5 }
+      ]
+    }
+  },
+  {
+    "id": "church.minister_to_the_poor",
+    "title": "Minister to the Poor",
+    "description": "{actor.name} carries bread and the order's quiet word into the tenements.",
+    "category": "church",
+    "duration": 3,
+    "repeatable": true,
+    "cooldown_turns": 2,
+    "bindings": {
+      "actor": { "from": "member", "prefer": "highest", "by": "Persuasion" }
+    },
+    "check": { "scope": "actor", "attribute": "Presence", "skill": "Persuasion", "difficulty": 9 },
+    "on_success": {
+      "result_text": "Gratitude is a kind of currency, and the parish remembers a kind face.",
+      "effects": [
+        { "type": "institution_influence", "key": "church", "amount": 10 },
+        { "type": "devotion", "amount": 4 }
+      ]
+    },
+    "on_failure": {
+      "result_text": "A curate asks too many questions. Charity, it seems, is watched.",
+      "effects": [
+        { "type": "institution_influence", "key": "church", "amount": 2 },
+        { "type": "attention", "key": "mundane", "amount": 4 }
+      ]
+    }
+  },
+  {
+    "id": "underworld.work_the_waterfront",
+    "title": "Work the Waterfront",
+    "description": "{actor.name} learns whose palms to grease along the North End docks.",
+    "category": "underworld",
+    "duration": 3,
+    "repeatable": true,
+    "cooldown_turns": 2,
+    "bindings": {
+      "actor": { "from": "member", "prefer": "highest", "by": "Guile" }
+    },
+    "check": { "scope": "actor", "attribute": "Guile", "skill": "Infiltration", "difficulty": 10 },
+    "on_success": {
+      "result_text": "Crates move and questions do not. The order takes its cut of the dark trade.",
+      "effects": [
+        { "type": "resource", "key": "funds", "amount": 25 },
+        { "type": "institution_influence", "key": "underworld", "amount": 8 }
+      ]
+    },
+    "on_failure": {
+      "result_text": "A misjudged word, and the wrong men take an interest in the order's errand.",
+      "effects": [
+        { "type": "attention", "key": "mundane", "amount": 10 },
+        { "type": "member_status", "scope": "actor", "status": "injured" }
+      ]
+    }
+  },
+  {
+    "id": "university.haunt_the_stacks",
+    "title": "Haunt the Locked Stacks",
+    "description": "{actor.name} reads where the lamps are kept low and the catalogue lies.",
+    "category": "university",
+    "duration": 3,
+    "repeatable": true,
+    "cooldown_turns": 2,
+    "bindings": {
+      "actor": { "from": "member", "prefer": "highest", "by": "Intellect" }
+    },
+    "check": { "scope": "actor", "attribute": "Intellect", "skill": "Lore", "difficulty": 9 },
+    "on_success": {
+      "result_text": "Pages that were never meant to be copied are copied all the same.",
+      "effects": [{ "type": "resource", "key": "lore", "amount": 12 }]
+    },
+    "on_failure": {
+      "result_text": "Something in the marginalia reads back. The work leaves a residue.",
+      "effects": [
+        { "type": "resource", "key": "lore", "amount": 3 },
+        { "type": "attention", "key": "occult", "amount": 5 }
+      ]
+    }
+  },
+  {
+    "id": "press.plant_a_story",
+    "title": "Plant a Story",
+    "description": "{actor.name} buys a columnist a drink and a narrative.",
+    "category": "press",
+    "duration": 2,
+    "repeatable": true,
+    "cooldown_turns": 2,
+    "bindings": {
+      "actor": { "from": "member", "prefer": "highest", "by": "Presence" }
+    },
+    "check": { "scope": "actor", "attribute": "Presence", "skill": "Persuasion", "difficulty": 10 },
+    "on_success": {
+      "result_text": "By morning the city believes a useful, harmless lie.",
+      "effects": [
+        { "type": "institution_influence", "key": "press", "amount": 10 },
+        { "type": "veil", "amount": 3 }
+      ]
+    },
+    "on_failure": {
+      "result_text": "The editor smells the setup and prints a question instead.",
+      "effects": [{ "type": "attention", "key": "mundane", "amount": 6 }]
+    }
+  }
+]

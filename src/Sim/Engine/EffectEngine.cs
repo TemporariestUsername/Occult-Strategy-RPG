@@ -46,7 +46,7 @@ public static class EffectEngine
         var result = new EffectResult();
         foreach (Effect effect in effects)
         {
-            if (ApplyOne(state, effect, context))
+            if (ApplyOne(state, effect, context, rng))
             {
                 result.Applied.Add(effect.Type);
             }
@@ -60,7 +60,7 @@ public static class EffectEngine
         return result;
     }
 
-    private static bool ApplyOne(GameState s, Effect e, BindingContext? ctx)
+    private static bool ApplyOne(GameState s, Effect e, BindingContext? ctx, IRng rng)
     {
         switch (e.Type)
         {
@@ -80,7 +80,7 @@ public static class EffectEngine
             case "member_corruption": Bound(ctx, e.Scope).Corruption += e.Amount ?? 0; return true;
             case "member_status": Bound(ctx, e.Scope).Status = ParseStatus(e.Status); return true;
             case "kill_member": Bound(ctx, e.Scope).Status = MemberStatus.Dead; return true;
-            case "recruit": Recruit(s, e.Template, e.Count ?? 1); return true;
+            case "recruit": Recruit(s, e.Template, e.Count ?? 1, rng); return true;
             case "relationship": AddRelationship(s, ctx, e); return true;
 
             // Inventory and the occult ledger.
@@ -141,17 +141,15 @@ public static class EffectEngine
         return inst;
     }
 
-    private static void Recruit(GameState s, string? template, int count)
+    private static void Recruit(GameState s, string? template, int count, IRng rng)
     {
         string baseId = string.IsNullOrEmpty(template) ? "initiate" : template;
         for (int i = 0; i < count; i++)
         {
             s.RecruitCounter++;
-            s.Members.Add(new Member
-            {
-                Id = $"{baseId}_{s.RecruitCounter}",
-                Status = MemberStatus.Active,
-            });
+            // The template doubles as the generation archetype, so a recruited
+            // "state_official" leans toward Finance/Infiltration, etc.
+            s.Members.Add(CharacterFactory.Create(rng, $"{baseId}_{s.RecruitCounter}", template));
         }
     }
 

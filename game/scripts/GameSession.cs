@@ -23,6 +23,7 @@ public sealed class GameSession
         Content = content;
         State = GameState.NewCampaign(seed);
         _rng = new SplitMix64Rng(State.RngState);
+        SeedFoundingRoster();
     }
 
     public GameState State { get; private set; }
@@ -33,6 +34,7 @@ public sealed class GameSession
     {
         State = GameState.NewCampaign(seed);
         _rng = new SplitMix64Rng(State.RngState);
+        SeedFoundingRoster();
     }
 
     public TurnReport AdvanceTurn()
@@ -114,6 +116,20 @@ public sealed class GameSession
         SchemeStart result = SchemeService.Start(State, scheme, assignment, _rng);
         Commit();
         return result;
+    }
+
+    // The starting scenario: a few founding initiates so the order isn't an empty room.
+    // A stand-in for onboarding content until that flow is wired; the count and archetypes
+    // are placeholders (a design/voice call). Founders come from the seeded RNG.
+    private void SeedFoundingRoster()
+    {
+        string[] archetypes = { "scholar", "occultist", "street_tough", "society_patron" };
+        for (int i = 0; i < archetypes.Length; i++)
+        {
+            State.Members.Add(CharacterFactory.Create(_rng, $"founder_{i + 1}", archetypes[i]));
+        }
+
+        Commit();
     }
 
     // A throwaway RNG for read-only queries, so they never consume the campaign stream.

@@ -98,9 +98,7 @@ public partial class Main : Control
     private void OnAdvanceTurn()
     {
         TurnReport report = _session.AdvanceTurn();
-        _log = report.ResolvedSchemes.Count > 0
-            ? $"Turn {_session.State.Turn}: resolved {report.ResolvedSchemes.Count} scheme(s)."
-            : $"Advanced to turn {_session.State.Turn}.";
+        _log = DescribeTurn(report);
         Render();
     }
 
@@ -119,7 +117,7 @@ public partial class Main : Control
         }
 
         ChoiceResolution result = _session.Choose(choice, _pending.Context);
-        _log = result.Allowed ? $"Chose: {choice.Id}" : $"Blocked: {result.Reason}";
+        _log = DescribeChoice(result, _pending.Context);
         _pending = null;
         Render();
     }
@@ -246,6 +244,55 @@ public partial class Main : Control
         var label = new Label { Text = text };
         label.AddThemeFontSizeOverride("font_size", 16);
         return label;
+    }
+
+    // Surface the narrative the sim already returns: the outcome prose, the check roll,
+    // and resolved schemes — instead of a terse "Chose: x" debug line.
+    private string DescribeChoice(ChoiceResolution result, BindingContext context)
+    {
+        if (!result.Allowed)
+        {
+            return $"Blocked: {result.Reason}";
+        }
+
+        var sb = new StringBuilder();
+        if (result.Check is not null)
+        {
+            sb.Append($"[{result.Check.Outcome}: rolled {result.Check.Total} vs {result.Check.Difficulty:0}] ");
+        }
+
+        string? text = result.Outcome?.ResultText;
+        sb.Append(string.IsNullOrEmpty(text) ? "(no further word)" : Interpolate(text, context));
+        return sb.ToString();
+    }
+
+    private string DescribeTurn(TurnReport report)
+    {
+        if (report.ResolvedSchemes.Count == 0)
+        {
+            return $"Advanced to turn {_session.State.Turn}.";
+        }
+
+        var sb = new StringBuilder();
+        sb.AppendLine($"Turn {_session.State.Turn}:");
+        foreach (SchemeResolution res in report.ResolvedSchemes)
+        {
+            string title = _session.Content.Schemes.TryGetValue(res.SchemeId, out Scheme? scheme)
+                ? scheme.Title
+                : res.SchemeId;
+
+            if (res.Fizzled)
+            {
+                sb.AppendLine($"• {title} — collapsed; an operative was gone.");
+                continue;
+            }
+
+            string branch = res.Branch is CheckOutcome outcome ? $" [{outcome}]" : string.Empty;
+            string? text = res.Outcome?.ResultText;
+            sb.AppendLine($"• {title}{branch}: {(string.IsNullOrEmpty(text) ? "done." : text)}");
+        }
+
+        return sb.ToString().TrimEnd();
     }
 
     private static string Interpolate(string text, BindingContext context)
