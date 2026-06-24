@@ -177,7 +177,7 @@ Key reading: [`CLAUDE.md`](CLAUDE.md) (the operating contract & architecture law
 ## Building & running
 
 **Prerequisites:** [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0).
-For running the game: [Godot 4](https://godotengine.org) (4.3+) with .NET/C# support.
+For running the game: [Godot 4](https://godotengine.org) (4.6) with .NET/C# support.
 
 ```bash
 dotnet build src/Sim                          # build the simulation library
@@ -191,7 +191,7 @@ godot --path game                             # run the game (needs the Godot 4 
 
 The project's main scene is already set, so once it's open you just press Play:
 
-1. Install the **.NET 8 SDK** and **Godot 4.3+** — the download labelled **".NET"**
+1. Install the **.NET 8 SDK** and **Godot 4.6** — the download labelled **".NET"**
    (the standard build can't run C#).
 2. In Godot's **Project Manager** → **Import** → choose `game/project.godot` →
    **Import & Edit**. (After the first time, it's in your project list — just open it.)

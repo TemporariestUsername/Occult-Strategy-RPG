@@ -7,7 +7,7 @@ contains **no game rules** (CLAUDE.md architecture law 2).
 
 - **.NET 8 SDK** — https://dotnet.microsoft.com/download/dotnet/8.0
   (check with `dotnet --version`; it should print `8.x`).
-- **Godot 4.3+ — the .NET/C# build**, i.e. the download labelled **".NET"**. The
+- **Godot 4.6 — the .NET/C# build**, i.e. the download labelled **".NET"**. The
   standard build cannot run C#. https://godotengine.org/download
 
 ## Run it in Godot (step by step)
@@ -71,8 +71,8 @@ then *Advance Turn* a few times to watch it resolve.
 - **It runs but no events or schemes appear.** The `content/` folder must be present
   at the repo root, beside `game/`. If you moved `game/`, the runtime can't find
   `../content` (see `ResolveContentDir()` in `Main.cs`).
-- **Import fails / C# features missing.** This project targets Godot **4.3+**
-  (`config_version=5`); older 4.x builds may not open it.
+- **Import fails / C# features missing.** This project targets Godot **4.6** (its
+  `game.csproj` uses `Godot.NET.Sdk/4.6.0`); older editors may not open it.
 
 ## Known gaps
 
