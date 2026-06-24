@@ -1,0 +1,22 @@
+<Project Sdk="Godot.NET.Sdk/4.3.0">
+
+  <!--
+    The Pale Communion — Godot 4 presentation layer. References Sim and reads its
+    state / issues it commands; contains NO game rules (CLAUDE.md architecture law 2).
+    `dotnet build` compiles this against GodotSharp (restored from NuGet); running and
+    editing scenes needs the Godot 4 editor with .NET support.
+  -->
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <RootNamespace>PaleCommunion.Game</RootNamespace>
+    <AssemblyName>ThePaleCommunion.Game</AssemblyName>
+    <Nullable>enable</Nullable>
+    <LangVersion>latest</LangVersion>
+    <EnableDynamicLoading>true</EnableDynamicLoading>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../src/Sim/Sim.csproj" />
+  </ItemGroup>
+
+</Project>

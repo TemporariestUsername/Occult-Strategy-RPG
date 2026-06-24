@@ -13,6 +13,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tools", "tools", "{9743757F
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ContentValidator", "tools\ContentValidator\ContentValidator.csproj", "{B946F66C-8A14-48CA-8AAA-922D9D66B3C2}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "game", "game\game.csproj", "{32D3C23A-785E-4C0F-ACA6-FD5B38D0E226}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -34,6 +36,10 @@ Global
 		{B946F66C-8A14-48CA-8AAA-922D9D66B3C2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B946F66C-8A14-48CA-8AAA-922D9D66B3C2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B946F66C-8A14-48CA-8AAA-922D9D66B3C2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{32D3C23A-785E-4C0F-ACA6-FD5B38D0E226}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{32D3C23A-785E-4C0F-ACA6-FD5B38D0E226}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{32D3C23A-785E-4C0F-ACA6-FD5B38D0E226}.Release|Any CPU.ActiveCfg = Debug|Any CPU
+		{32D3C23A-785E-4C0F-ACA6-FD5B38D0E226}.Release|Any CPU.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{392CC2DA-CFB5-4D8C-BB0B-768A9664B576} = {787296EB-EE0A-4A75-B0B1-39A49219B2F4}

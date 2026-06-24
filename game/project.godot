@@ -1,0 +1,15 @@
+; Engine configuration file.
+; Generated/edited by the Godot editor; this is a minimal hand-written starter.
+; See https://docs.godotengine.org/en/stable/ for the format.
+
+config_version=5
+
+[application]
+
+config/name="The Pale Communion"
+run/main_scene="res://scenes/Main.tscn"
+config/features=PackedStringArray("4.3", "C#", "Forward Plus")
+
+[dotnet]
+
+project/assembly_name="ThePaleCommunion.Game"

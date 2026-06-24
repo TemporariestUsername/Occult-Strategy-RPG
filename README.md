@@ -161,7 +161,7 @@ and are named to match content ids, so an event's `art` field resolves to a file
 ```
 src/Sim/                 Pure C# simulation — ALL game rules. Zero Godot references. Unit-tested.
 src/Sim.Tests/           xUnit tests for the simulation (run before every commit).
-game/                    Godot 4 project — presentation only. References Sim. No game rules. (not scaffolded yet)
+game/                    Godot 4 project (C#) — presentation only. References Sim. No game rules.
 content/                 Game data (events, …) as authored JSON + the content registry.
 schemas/                 JSON Schemas for content/. event / scheme / ritual .schema.json are the contracts.
 tools/ContentValidator/  Validates content/ against schemas/ and the registry.
@@ -177,19 +177,19 @@ Key reading: [`CLAUDE.md`](CLAUDE.md) (the operating contract & architecture law
 ## Building & running
 
 **Prerequisites:** [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0).
-(Later, for the presentation layer: [Godot 4](https://godotengine.org) with .NET/C#
-support.)
+For running the game: [Godot 4](https://godotengine.org) (4.3+) with .NET/C# support.
 
 ```bash
 dotnet build src/Sim                          # build the simulation library
 dotnet test  src/Sim.Tests                    # run the simulation tests
-dotnet run   --project tools/ContentValidator # validate all content/ against the schema + registry
-# godot --path game                           # run the game — once game/ is scaffolded
+dotnet run   --project tools/ContentValidator # validate content/ against the schemas + registry
+dotnet build game                             # compile the Godot C# layer (no editor needed)
+godot --path game                             # run the game (needs the Godot 4 editor + .NET)
 ```
 
 The simulation is engine-agnostic: you can build, test, and validate content with
-nothing but the .NET SDK. Godot is only needed for the visual game once `game/`
-exists.
+nothing but the .NET SDK. Godot is only needed to render and play the game; see
+[`game/README.md`](game/README.md).
 
 ## Architecture at a glance
 
@@ -247,7 +247,8 @@ the bulk of the content (writing) are the major pieces still ahead.
 | Content validator — events, schemes, rituals (`tools/ContentValidator`) | ✅ working |
 | Boston as the v1 setting | ✅ baked into the design and `NewCampaign` |
 | Binding pools — `member` ✅, `recruit_pool` ✅; `rival_order` / `npc` / `institution_contact` | ⏳ pending |
-| `game/` Godot project & UI | ⛔ not started |
+| `game/` Godot project — C# layer wired to the sim (compiles; rendering needs the editor) | 🟡 scaffolded |
+| Near-final UI & game feel (the Phase-1 vertical slice) | ⛔ not started |
 | Art assets | ⛔ not started — see the art bible |
 
 See [`docs/dark-occult-grand-strategy-dev-plan.md`](docs/dark-occult-grand-strategy-dev-plan.md)
