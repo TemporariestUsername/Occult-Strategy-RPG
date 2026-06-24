@@ -187,9 +187,25 @@ dotnet build game                             # compile the Godot C# layer (no e
 godot --path game                             # run the game (needs the Godot 4 editor + .NET)
 ```
 
-The simulation is engine-agnostic: you can build, test, and validate content with
-nothing but the .NET SDK. Godot is only needed to render and play the game; see
+### Running the game in Godot
+
+The project's main scene is already set, so once it's open you just press Play:
+
+1. Install the **.NET 8 SDK** and **Godot 4.3+** — the download labelled **".NET"**
+   (the standard build can't run C#).
+2. In Godot's **Project Manager** → **Import** → choose `game/project.godot` →
+   **Import & Edit**. (After the first time, it's in your project list — just open it.)
+3. Press **Build** (the hammer icon, top-right of the editor) to compile the C# code.
+4. Press **F5** / **▶ Play** to run `scenes/Main.tscn`.
+
+You'll get a functional scaffold UI — a status summary, the *Advance Turn* /
+*Draw Event* / *New Campaign* actions, a schemes panel, and event cards — driven
+entirely by the simulation. Keep `game/` beside `content/`: the game loads authored
+content from `../content` at runtime. Full walkthrough and troubleshooting live in
 [`game/README.md`](game/README.md).
+
+The simulation is engine-agnostic: you can build, test, and validate content with
+nothing but the .NET SDK — Godot is only needed to render and play the game.
 
 ## Architecture at a glance
 
