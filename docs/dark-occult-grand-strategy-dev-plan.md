@@ -9,9 +9,9 @@
 
 **The pitch.** You are the secret steward of a clandestine occult order in Boston in the years 1905–1925 — the golden age of spiritualism, the trauma of the Great War, the 1918 influenza, and the modernist occult revival (the Golden Dawn, Theosophy, the O.T.O., the séance parlor). You grow your order from a handful of initiates meeting in a rented back room into a hidden power that bends history — or you watch it consume itself through hubris, schism, and the attention of things that should not be noticed.
 
-**Genre.** Grand-strategy / management at the macro layer, with a deep character-RPG simulation at its heart. The closest reference points are *Cultist Simulator* (occult management, dread, ambiguity), *Crusader Kings III* (character simulation, intrigue, lineages), and *Frostpunk* (a society under pressure forced into hard moral choices). It is **not** a tactical battler — there is no XCOM/Fire Emblem combat grid.
+**Genre.** Grand-strategy / management with a deep, **psychological character simulation at its heart** — the order's people are the game. The primary reference points are *Crusader Kings III* (character simulation, traits, intrigue, lineages), *Shadow Hearts* — the **1913 original**, for its grim early-century occult horror, its accruing **Malice**, and a Sanity that frays the mind under strain — and *Shin Megami Tensei* (a **Law / Chaos / Neutral** alignment that reshapes the world, and rare, dangerous pacts with occult entities). *Cultist Simulator* informs **tone and ambiguity only — not the model**; *Frostpunk* lends the society-under-pressure moral squeeze. It is **not** a tactical battler and **not** a JRPG — no combat grid, no battle mode; every confrontation resolves through characters, schemes, and events.
 
-**Core fantasy.** Stewardship of a living, breathing secret society. Your initiates are real characters — they have ambitions, traits, relationships, and arcs; they age, betray, ascend, go mad, and die. Knowledge is power *and* poison: every occult gain accrues corruption and draws attention. The central tension is **secrecy vs. influence** — to act on the world you must expose yourself, and exposure invites the authorities, rival orders, and the Unnamed.
+**Core fantasy.** Stewardship of a living, breathing secret society — and the *psychology* of the vivid, flawed people inside it. Your initiates are real characters, and their **talents, flaws, and interactions** are where the game lives: they carry ambitions, fears, and secrets; they form loyalties and rivalries; they mentor, seduce, and betray one another; they age, schism, go mad, and die. Knowledge is power *and* poison: every occult gain accrues corruption and draws attention. The order is born shackled to a **single occult entity** — its founding Pact — and to bind a *second* is a rare, campaign-defining triumph. The headline tension is **secrecy vs. influence**; the deeper one is what the work does to your people.
 
 **Why this scope works for you.** A grand-strategy management game is overwhelmingly **systems, data, and UI** rather than bespoke 3D art or animation — which is the single best genre to build as a solo developer leaning on an AI coding agent. The bottlenecks here are *design discipline, content volume (writing), and balance* — not raw programming throughput. This plan is structured around that reality.
 
@@ -47,11 +47,11 @@ You plant cells, recruit, gather resources, and run schemes against and through 
 
 **The Sanctum — your headquarters.** A buildable base: Library (research), Ritual Chamber (rituals), Scriptorium (writing/forgery/propaganda), Infirmary (heal stress/wounds), Vault (store relics/reagents), Sanctum Sanctorum (endgame). Each room unlocks actions and improves with investment.
 
-**The action economy — Schemes.** The minute-to-minute verb. You assign characters to time-based tasks that resolve via skill checks + traits + risk: research a ritual, infiltrate the police, run a séance for a wealthy patron, recover a relic, indoctrinate a recruit, blackmail a magistrate, eliminate a rival. This is the *Cultist Simulator* verb/timer feel married to *CK3*'s scheme system.
+**The action economy — Schemes.** The minute-to-minute verb. You assign characters to time-based tasks that resolve via skill checks + traits + risk: research a ritual, infiltrate the police, run a séance for a wealthy patron, recover a relic, indoctrinate a recruit, blackmail a magistrate, eliminate a rival. This is a time-and-assignment action economy in the *CK3* scheme tradition — verbs with duration, risk, and the right character for the job.
 
 **Rituals & the supernatural.** Spend Lore + reagents + initiates to perform rituals with powerful effects and dangerous side effects (corruption, attention spikes, casualties, unintended summonings). Rituals are the genre's "tech tree" but every node bites back.
 
-**Events & threats.** A narrative event system (illustrated dilemma cards in the *Reigns*/*CK3* tradition) supplies texture and hard choices. Threats escalate on three axes: rival orders, the authorities (a recurring inquisitorial antagonist — the "Bureau"), and the cosmic/supernatural pressure of pushing the Veil too far.
+**Events & threats.** A narrative event system (illustrated dilemma cards in the *Reigns*/*CK3* tradition) supplies texture and hard choices. Threats escalate on three axes: rival orders, the authorities (a recurring inquisitorial antagonist — the "Bureau"), and the cosmic/supernatural pressure of pushing the Veil too far — the last driven by **Malice** (§2.3), which does not merely rise but eventually *gives birth* to something that comes for you.
 
 **Meta / win conditions — the Great Work.** The order advances through tiers (degrees of initiation). The player pursues one of several mutually exclusive endgames:
 
@@ -59,6 +59,8 @@ You plant cells, recruit, gather resources, and run schemes against and through 
 - **Dominion** — achieve hidden occult control of the city/state.
 - **The Opening** — breach the Veil deliberately (potentially apocalyptic; the "bad ending you chose").
 - **The Long Game** — endure as an eternal, hidden society (the "stable" victory).
+
+These four sort onto the alignment axis (§2.3): **Dominion** and **the Long Game** are Law's victories, **the Opening** is Chaos's, and **Ascension** is the Neutral/personal road — which paths stay open depends on where your choices have driven the order.
 
 **Failure states.** The order is destroyed by authorities or rivals; the Veil tears catastrophically beyond your control; or the order collapses internally when Devotion or collective Sanity bottoms out.
 
@@ -74,17 +76,24 @@ You plant cells, recruit, gather resources, and run schemes against and through 
 - **Devotion** — the order's internal cohesion and morale.
 - **Corruption / Sanity** — tracked per-character *and* order-wide.
 
-**Characters (the RPG layer).** This is where you spend your best craft.
+**Characters — the psychological core (where you spend your best craft).** The members *are* the courtiers; their talents, flaws, and the ways they act on one another are the heart of the game.
 - **Attributes:** Intellect, Will, Presence, Guile, Body.
 - **Skills:** Lore, Ritual, Infiltration, Persuasion, Violence, Medicine, Finance.
 - **Traits:** Ambitious, Zealot, Skeptic, Touched (mad/gifted), Scholar, Aristocrat, Veteran (shell-shocked), Addict, Devout, Traitorous, etc. Traits drive event hooks and modify checks.
 - **Relationships:** loyalty, rivalry, romance, mentorship, blood ties.
 - **Corruption track:** as it rises, mutations/madness manifest — mechanically useful, narratively ruinous.
+- **Sanity & the break:** occult work, ritual, and the Pact's whispers fray the mind (Shadow Hearts' SP married to *CK3*'s stress). At its floor a member *breaks* — gaining a derangement, lashing out, defecting, or being lost: the order's quiet Berserk. Mended slowly, in the Infirmary and away from the work.
 - **Lifecycle:** recruitment → advancement through degrees → death. Permadeath with legacy (a dead mentor's pupil inherits hooks). This is the "dynasty" analogue, expressed as *lineages of initiates* rather than bloodlines.
 
 **Intrigue & secrets.** A *CK3*-style secrets-as-currency layer: discovering a magistrate's affair, a rival's true name, or a member's heresy gives you leverage (blackmail, exposure, recruitment). Your own members carry secrets that rivals can turn against you.
 
-**The Veil / cosmic-horror layer.** A Faustian **patron** system: named powers can be courted for escalating boons at escalating cost. Pushing too deep triggers irreversible consequences. The horror is in the *bargain*, not in jump scares.
+**The Veil / cosmic-horror layer.** A Faustian **patron** system: distant, named powers — the archons of Law and the princes of Chaos among them — courted for escalating boons at escalating cost. Pushing too deep triggers irreversible consequences. The horror is in the *bargain*, not in jump scares.
+
+**The Pact & the Bound — rare, dangerous entities.** Where mortal members are many, *bound entities are nearly singular.* The order begins shackled to **one** — its founding **Pact**, which together with the starting archetype defines what kind of order you are. A bound entity is not a unit in a roster but a malevolent **relationship**: it has an affinity, an appetite that must be fed, and an opinion of you, and it presses on your members — whispering, tempting, draining Sanity, dragging the order toward its alignment. It can be set to schemes and rituals like a councillor, always at a price. **Binding a second entity is a campaign-defining victory** — a long, perilous arc gated by lore, patronage, and alignment, never a routine action. Most entities are studied but never held: the **compendium is a bestiary of the *unbound*** — forbidden knowledge that makes the rare binding feel earned. (Roster-style **fusion is out for v1**; at most, a Pact may be *deepened* or *transmuted* through a single transgressive late-game rite.)
+
+**Malice & the Graveyard.** Transgression — violence, ruinous rituals, feeding the Bound, tearing the Veil — accrues **Malice** in the world. Malice is no passive heat meter: when it crests, the **Graveyard** *gives birth*, and a manifested horror comes hunting the order as a recurring antagonist. It is the price of power made flesh, and the dread engine the rest of the loop feeds — the earlier "occult attention" axis given teeth.
+
+**Alignment — Law / Chaos / Neutral.** One moral-cosmic axis your choices slide along. **Law** is hierarchy, oaths, dominion over spirits, the Veil kept by discipline; **Chaos** is the older hungry things, communion and liberation, the Veil torn open; **Neutral** is humanity alone — power without a master. Alignment gates which patrons and entities will treat with you and which crises fall on you, and it sorts the endgames above. Crucially it is also a **characters** mechanic: members hold their own leanings, so driving the order toward one pole *schisms* those who lean the other — devotion cracks, factions form, and someone may walk, secrets and all. It layers *on top of* the Veil/Reach tension, never replacing it.
 
 ### 2.4 Content scope targets for v1 (the discipline gate)
 
@@ -303,7 +312,7 @@ Tooling & platform:
 - Steamworks (developer): https://partner.steamgames.com
 - GodotSteam (Steamworks integration): https://godotsteam.com
 
-Design touchstones to study: *Cultist Simulator*, *Crusader Kings III*, *Frostpunk*, *Darkest Dungeon*, and Failbetter's *Fallen London* / *Sunless Sea* (writing-forward dark worlds). Literary roots for tone: Arthur Machen, Algernon Blackwood, and the real history of the Golden Dawn, Theosophy, and the spiritualist movement.
+Design touchstones to study: *Crusader Kings III* (the character/intrigue spine), *Shadow Hearts* — the 1913 original, for tone, Malice, and Sanity — and *Shin Megami Tensei* (alignment and pacts). Secondary: *Cultist Simulator* (occult ambiguity and dread — as flavor, not the model), *Frostpunk*, *Darkest Dungeon* (stress and affliction), and Failbetter's *Fallen London* / *Sunless Sea* (writing-forward dark worlds). Literary roots for tone: Arthur Machen, Algernon Blackwood, and the real history of the Golden Dawn, Theosophy, and the spiritualist movement.
 
 ---
 
