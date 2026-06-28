@@ -32,6 +32,9 @@ public sealed class GameState
     public double AttentionMundane { get; set; }
     public double AttentionOccult { get; set; }
 
+    /// <summary>The order's Law(−)/Chaos(+) position, −100..100 (0 = Neutral).</summary>
+    public double Alignment { get; set; }
+
     public Dictionary<string, InstitutionState> Institutions { get; set; } = new();
     public Dictionary<string, bool> Flags { get; set; } = new();
     public List<Member> Members { get; set; } = new();
@@ -116,6 +119,7 @@ public sealed class GameState
         OrderCorruption = ClampMeter(OrderCorruption);
         AttentionMundane = ClampMeter(AttentionMundane);
         AttentionOccult = ClampMeter(AttentionOccult);
+        Alignment = AlignmentScale.Clamp(Alignment);
 
         foreach (InstitutionState inst in Institutions.Values)
         {
@@ -126,6 +130,8 @@ public sealed class GameState
         foreach (Member m in Members)
         {
             m.Corruption = ClampMeter(m.Corruption);
+            m.Sanity = ClampMeter(m.Sanity);
+            m.Alignment = AlignmentScale.Clamp(m.Alignment);
         }
 
         foreach (Relationship r in Relationships)
@@ -151,6 +157,8 @@ public sealed class GameState
         foreach (Member m in RecruitPool)
         {
             m.Corruption = ClampMeter(m.Corruption);
+            m.Sanity = ClampMeter(m.Sanity);
+            m.Alignment = AlignmentScale.Clamp(m.Alignment);
         }
 
         foreach (ActiveScheme scheme in ActiveSchemes)
@@ -165,4 +173,45 @@ public sealed class GameState
     public static double ClampMeter(double value) => Math.Clamp(value, MeterMin, MeterMax);
 
     public static double ClampMin(double value) => value < 0 ? 0 : value;
+
+    /// <summary>The directed bond of a given kind from one member to another, or null.</summary>
+    public Relationship? FindRelationship(string fromId, string toId, RelationshipKind kind) =>
+        Relationships.FirstOrDefault(r => r.FromId == fromId && r.ToId == toId && r.Kind == kind);
+
+    /// <summary>
+    /// Add <paramref name="delta"/> to a directed bond (clamped −100..100), creating it if
+    /// absent; returns the bond.
+    /// </summary>
+    public Relationship AdjustRelationship(string fromId, string toId, RelationshipKind kind, double delta)
+    {
+        Relationship? rel = FindRelationship(fromId, toId, kind);
+        if (rel is null)
+        {
+            rel = new Relationship { FromId = fromId, ToId = toId, Kind = kind };
+            Relationships.Add(rel);
+        }
+
+        rel.Value = Math.Clamp(rel.Value + delta, -100.0, 100.0);
+        return rel;
+    }
+
+    /// <summary>
+    /// Net directed sentiment from one member to another: affectionate bonds add, rivalry
+    /// subtracts. A simple aggregation rule, kept neutral until a richer model is designed.
+    /// </summary>
+    public double NetOpinion(string fromId, string toId)
+    {
+        double sum = 0;
+        foreach (Relationship r in Relationships)
+        {
+            if (r.FromId != fromId || r.ToId != toId)
+            {
+                continue;
+            }
+
+            sum += r.Kind == RelationshipKind.Rivalry ? -r.Value : r.Value;
+        }
+
+        return Math.Clamp(sum, -100.0, 100.0);
+    }
 }

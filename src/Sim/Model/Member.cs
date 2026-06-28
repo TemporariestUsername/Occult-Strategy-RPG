@@ -30,6 +30,18 @@ public sealed class Member
     /// <summary>Per-character corruption, 0..100.</summary>
     public double Corruption { get; set; }
 
+    /// <summary>
+    /// Soundness of mind, 0..100 (100 = sound). Occult work, ritual, and a Pact's
+    /// whispers erode it; at the floor the member breaks (see <c>SanitySystem</c>).
+    /// </summary>
+    public double Sanity { get; set; } = 100;
+
+    /// <summary>
+    /// Personal Law(−)/Chaos(+) leaning, −100..100 (0 = Neutral). The order's own
+    /// alignment pulls against members who lean the other way (schism — a later system).
+    /// </summary>
+    public double Alignment { get; set; }
+
     /// <summary>Attributes keyed by schema name: Intellect, Will, Presence, Guile, Body.</summary>
     public Dictionary<string, int> Attributes { get; set; } = new();
 
@@ -41,6 +53,10 @@ public sealed class Member
 
     [JsonIgnore]
     public bool IsAlive => Status != MemberStatus.Dead;
+
+    /// <summary>This member's pole on the Law–Chaos axis, derived from <see cref="Alignment"/>.</summary>
+    [JsonIgnore]
+    public AlignmentPole Leaning => AlignmentScale.Classify(Alignment);
 
     public int GetAttribute(string name) => Attributes.TryGetValue(name, out int v) ? v : 0;
 

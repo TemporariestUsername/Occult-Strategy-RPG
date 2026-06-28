@@ -76,6 +76,7 @@ public class SaveRoundTripTests
         Assert.Empty(loaded.ActiveSchemes);      // v4 field, backfilled
         Assert.Empty(loaded.RecruitPool);        // v4 field, backfilled
         Assert.Empty(loaded.EventAvailableOn);   // v5 field, backfilled
+        Assert.Equal(0, loaded.Alignment);       // v6 field, backfilled
     }
 
     [Fact]
@@ -89,5 +90,35 @@ public class SaveRoundTripTests
     {
         string json = SaveSystem.Save(GameState.NewCampaign(1));
         Assert.Contains($"\"version\": {SaveSystem.CurrentVersion}", json);
+    }
+
+    [Fact]
+    public void RoundTrip_PreservesPsychology()
+    {
+        var s = GameState.NewCampaign(5);
+        s.Alignment = -40;
+        s.Members.Add(new Member { Id = "m1", Name = "Sister Vane", Sanity = 18, Alignment = 55 });
+        s.AdjustRelationship("m1", "m2", RelationshipKind.Rivalry, 30);
+
+        GameState loaded = SaveSystem.Load(SaveSystem.Save(s));
+
+        Assert.Equal(-40, loaded.Alignment);
+        Member m = Assert.Single(loaded.Members);
+        Assert.Equal(18, m.Sanity);
+        Assert.Equal(55, m.Alignment);
+        Assert.Equal(30, loaded.FindRelationship("m1", "m2", RelationshipKind.Rivalry)!.Value);
+    }
+
+    [Fact]
+    public void Version5Save_BackfillsPsychologyDefaults()
+    {
+        // A v5 save whose member predates Sanity/Alignment.
+        string v5 = "{\"version\":5,\"state\":{\"members\":[{\"id\":\"m1\",\"name\":\"Old Hand\"}]}}";
+        GameState loaded = SaveSystem.Load(v5);
+
+        Assert.Equal(0, loaded.Alignment);   // order alignment backfilled
+        Member m = Assert.Single(loaded.Members);
+        Assert.Equal(100, m.Sanity);          // sound mind backfilled
+        Assert.Equal(0, m.Alignment);         // Neutral backfilled
     }
 }
