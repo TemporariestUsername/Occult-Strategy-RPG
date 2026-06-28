@@ -51,6 +51,7 @@ public partial class Main : Control
 
     private Label _status = null!;
     private Label _resources = null!;
+    private Label _alignment = null!;
     private RichTextLabel _roster = null!;
     private VBoxContainer _schemesBox = null!;
     private PanelContainer _eventCard = null!;
@@ -109,6 +110,8 @@ public partial class Main : Control
         AddMeter(meters, "occult", "Heat (occult)", OccultColor);
         _resources = Body(string.Empty);
         meters.AddChild(_resources);
+        _alignment = Body(string.Empty);
+        meters.AddChild(_alignment);
         left.AddChild((Control)meters.GetParent());
 
         VBoxContainer roster = Panel("Initiates", out _);
@@ -209,6 +212,12 @@ public partial class Main : Control
         foreach (SchemeResolution res in report.ResolvedSchemes)
         {
             sb.Append('\n').Append(DescribeResolution(res));
+        }
+
+        foreach (SanityBreak br in report.SanityBreaks)
+        {
+            string who = _session.State.Members.FirstOrDefault(m => m.Id == br.MemberId)?.Name ?? "An initiate";
+            sb.Append($"\n[color=#A8432F]{who} breaks — {DescribeBreak(br.Kind)}[/color]");
         }
 
         AppendDeltas(sb, before, after);
@@ -314,6 +323,8 @@ public partial class Main : Control
 
         _resources.Text =
             $"Funds {state.Funds:0}    Lore {state.Lore:0}    Reagents {state.Reagents:0}";
+        _alignment.Text =
+            $"Alignment  {state.Alignment.ToString("+0;-0;0")}  ({AlignmentScale.Classify(state.Alignment)})";
 
         RenderRoster(state);
         RenderSchemes();
@@ -351,6 +362,13 @@ public partial class Main : Control
             if (m.Traits.Count > 0)
             {
                 sb.Append($"  ·  [color=#7C4B86]{string.Join(", ", m.Traits)}[/color]");
+            }
+
+            string sanityColor = m.Sanity <= 25 ? "#A8432F" : "#9A7B4F";
+            sb.Append($"  ·  [color={sanityColor}]sanity {m.Sanity:0}[/color]");
+            if (m.Leaning != AlignmentPole.Neutral)
+            {
+                sb.Append($"  ·  {m.Leaning}");
             }
 
             if (m.Corruption > 0)
@@ -468,6 +486,15 @@ public partial class Main : Control
         return $"[b]{title}[/b]{branch}: {(string.IsNullOrEmpty(text) ? "done." : text)}";
     }
 
+    private static string DescribeBreak(SanityBreakKind kind) => kind switch
+    {
+        SanityBreakKind.Derangement => "a derangement takes hold.",
+        SanityBreakKind.LashOut => "they turn on their own.",
+        SanityBreakKind.Flight => "they flee into the night.",
+        SanityBreakKind.Collapse => "the mind takes the body with it.",
+        _ => kind.ToString(),
+    };
+
     private void Chronicle(string beat)
     {
         _chronicle.Add(beat);
@@ -478,14 +505,14 @@ public partial class Main : Control
     }
 
     private readonly record struct Snap(
-        double Funds, double Lore, double Reagents, double Veil,
-        double Devotion, double Corruption, double Mundane, double Occult, int Members);
+        double Funds, double Lore, double Reagents, double Veil, double Devotion,
+        double Corruption, double Mundane, double Occult, double Alignment, int Members);
 
     private Snap Snapshot()
     {
         GameState s = _session.State;
         return new Snap(s.Funds, s.Lore, s.Reagents, s.Veil, s.Devotion,
-            s.OrderCorruption, s.AttentionMundane, s.AttentionOccult, s.Members.Count(m => m.IsAlive));
+            s.OrderCorruption, s.AttentionMundane, s.AttentionOccult, s.Alignment, s.Members.Count(m => m.IsAlive));
     }
 
     private static void AppendDeltas(StringBuilder sb, Snap a, Snap b)
@@ -508,6 +535,7 @@ public partial class Main : Control
         D("Corruption", a.Corruption, b.Corruption);
         D("Heat-mundane", a.Mundane, b.Mundane);
         D("Heat-occult", a.Occult, b.Occult);
+        D("Alignment", a.Alignment, b.Alignment);
         if (b.Members != a.Members)
         {
             parts.Add($"{(b.Members > a.Members ? "+" : "")}{b.Members - a.Members} initiate(s)");

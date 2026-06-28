@@ -89,7 +89,7 @@
       "properties": {
         "type": {
           "enum": [
-            "resource", "institution_influence", "institution_disposition", "attention", "veil", "devotion", "order_corruption",
+            "resource", "institution_influence", "institution_disposition", "attention", "veil", "devotion", "order_corruption", "order_alignment",
             "turn", "year", "tier", "great_work_chosen", "great_work_step", "flag",
             "has_relic", "has_reagent", "member_count", "member_with_trait", "member_with_skill",
             "scope_has_trait", "scope_skill", "scope_attribute", "patron_relationship", "secret_known", "random_chance"
@@ -195,8 +195,8 @@
       "properties": {
         "type": {
           "enum": [
-            "resource", "institution_influence", "institution_disposition", "attention", "veil", "devotion", "order_corruption",
-            "add_trait", "remove_trait", "member_corruption", "member_status", "kill_member", "recruit", "relationship",
+            "resource", "institution_influence", "institution_disposition", "attention", "veil", "devotion", "order_corruption", "order_alignment",
+            "add_trait", "remove_trait", "member_corruption", "member_sanity", "member_status", "kill_member", "recruit", "relationship",
             "grant_relic", "remove_relic", "grant_reagent", "remove_reagent",
             "set_flag", "reveal_secret", "gain_secret", "patron_relationship",
             "great_work_advance", "great_work_set_step", "unlock_ritual", "unlock_scheme", "tier_change", "queue_event", "end_game"

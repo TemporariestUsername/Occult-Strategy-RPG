@@ -24,9 +24,9 @@ public static class EffectEngine
 {
     private static readonly HashSet<string> HandledTypeSet = new(StringComparer.Ordinal)
     {
-        "resource", "veil", "devotion", "order_corruption", "attention",
+        "resource", "veil", "devotion", "order_corruption", "order_alignment", "attention",
         "institution_influence", "institution_disposition", "set_flag",
-        "add_trait", "remove_trait", "member_corruption", "member_status", "kill_member",
+        "add_trait", "remove_trait", "member_corruption", "member_sanity", "member_status", "kill_member",
         "recruit", "relationship", "grant_relic", "remove_relic", "grant_reagent", "remove_reagent",
         "gain_secret", "reveal_secret", "patron_relationship", "unlock_ritual", "unlock_scheme",
         "great_work_advance", "great_work_set_step",
@@ -69,6 +69,7 @@ public static class EffectEngine
             case "veil": s.Veil += e.Amount ?? 0; return true;
             case "devotion": s.Devotion += e.Amount ?? 0; return true;
             case "order_corruption": s.OrderCorruption += e.Amount ?? 0; return true;
+            case "order_alignment": s.Alignment += e.Amount ?? 0; return true;
             case "attention": AddAttention(s, e.Key, e.Amount ?? 0); return true;
             case "institution_influence": InstitutionFor(s, e.Key).Influence += e.Amount ?? 0; return true;
             case "institution_disposition": InstitutionFor(s, e.Key).Disposition += e.Amount ?? 0; return true;
@@ -78,6 +79,7 @@ public static class EffectEngine
             case "add_trait": Bound(ctx, e.Scope).Traits.Add(Require(e.Id, "add_trait.id")); return true;
             case "remove_trait": Bound(ctx, e.Scope).Traits.Remove(Require(e.Id, "remove_trait.id")); return true;
             case "member_corruption": Bound(ctx, e.Scope).Corruption += e.Amount ?? 0; return true;
+            case "member_sanity": ApplySanity(s, ctx, e); return true;
             case "member_status": Bound(ctx, e.Scope).Status = ParseStatus(e.Status); return true;
             case "kill_member": Bound(ctx, e.Scope).Status = MemberStatus.Dead; return true;
             case "recruit": Recruit(s, e.Template, e.Count ?? 1, rng); return true;
@@ -150,6 +152,26 @@ public static class EffectEngine
             // The template doubles as the generation archetype, so a recruited
             // "state_official" leans toward Finance/Infiltration, etc.
             s.Members.Add(CharacterFactory.Create(rng, $"{baseId}_{s.RecruitCounter}", template));
+        }
+    }
+
+    /// <summary>
+    /// Adjust Sanity. With a <c>scope</c>, the bound member; without one, a broadcast to
+    /// every living member — the whole order's nerves fraying at once.
+    /// </summary>
+    private static void ApplySanity(GameState s, BindingContext? ctx, Effect e)
+    {
+        double amount = e.Amount ?? 0;
+        if (string.IsNullOrEmpty(e.Scope))
+        {
+            foreach (Member m in s.Members.Where(m => m.IsAlive))
+            {
+                m.Sanity += amount;
+            }
+        }
+        else
+        {
+            Bound(ctx, e.Scope).Sanity += amount;
         }
     }
 

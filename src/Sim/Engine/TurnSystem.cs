@@ -10,6 +10,9 @@ public sealed class TurnReport
     public int Turn { get; init; }
     public List<SchemeResolution> ResolvedSchemes { get; } = new();
     public List<string> ReadyEventIds { get; } = new();
+
+    /// <summary>Members whose minds gave way this turn (the order's quiet Berserk).</summary>
+    public List<SanityBreak> SanityBreaks { get; } = new();
 }
 
 /// <summary>
@@ -64,6 +67,9 @@ public static class TurnSystem
             state.Queue.Remove(queued);
             report.ReadyEventIds.Add(queued.EventId);
         }
+
+        // The month's toll: minds at the floor break (Shadow Hearts' SP / CK3 stress).
+        report.SanityBreaks.AddRange(SanitySystem.ResolveBreaks(state, rng));
 
         state.Normalize();
         return report;

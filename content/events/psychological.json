@@ -1,0 +1,169 @@
+[
+  {
+    "id": "character.the_small_hours",
+    "title": "The Small Hours",
+    "category": "character",
+    "weight": 3,
+    "repeatable": true,
+    "cooldown_turns": 4,
+    "trigger": { "type": "pool" },
+    "body": "The vigil runs past three in the morning, the way the old papers insist it must. Somewhere between the fourth and fifth hour the candles lean, all together, toward the east wall — and something on the far side of it leans back. The initiates feel it in their teeth.",
+    "choices": [
+      {
+        "id": "hold_the_vigil",
+        "label": "Hold the vigil until dawn. Whatever is listening, let it hear you.",
+        "outcome": {
+          "result_text": "By grey light the wall is only a wall again. Everyone has learned something they will not be able to unlearn, and no one sleeps well for a while.",
+          "effects": [
+            { "type": "resource", "key": "lore", "amount": 7 },
+            { "type": "member_sanity", "amount": -12 },
+            { "type": "attention", "key": "occult", "amount": 5 }
+          ]
+        }
+      },
+      {
+        "id": "break_it_off",
+        "label": "Break it off. Some doors are only polite until you knock back.",
+        "outcome": {
+          "result_text": "You snuff the candles and send everyone home through different streets. The work goes undone, but the order keeps its nerve — and its secrecy.",
+          "effects": [
+            { "type": "veil", "amount": 4 },
+            { "type": "devotion", "amount": -3 }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "id": "ritual.a_door_better_left",
+    "title": "A Door Better Left",
+    "category": "ritual",
+    "weight": 2,
+    "repeatable": true,
+    "cooldown_turns": 6,
+    "trigger": { "type": "pool" },
+    "bindings": {
+      "actor": { "from": "member", "prefer": "highest", "by": "Lore" }
+    },
+    "body": "{actor.name} has found the seam — a place in the working where the diagram could be opened rather than merely read. It would answer questions the order has carried for years. It would also, plainly, be a kind of surrender.",
+    "choices": [
+      {
+        "id": "open_it",
+        "label": "Let {actor.name} open it. Knowledge is worth a wound.",
+        "outcome": {
+          "result_text": "What comes through is patient and articulate and entirely uninterested in being sent back. {actor.name} writes for six hours without stopping, and is not quite the same hand afterward.",
+          "effects": [
+            { "type": "resource", "key": "lore", "amount": 12 },
+            { "type": "member_sanity", "scope": "actor", "amount": -25 },
+            { "type": "order_alignment", "amount": 12 },
+            { "type": "attention", "key": "occult", "amount": 6 }
+          ]
+        }
+      },
+      {
+        "id": "seal_it",
+        "label": "Seal it. Forbid the reading and burn the seam from the diagram.",
+        "outcome": {
+          "result_text": "The order holds its line. {actor.name} obeys, and resents the obedience, and files the resentment somewhere it will keep.",
+          "effects": [
+            { "type": "order_alignment", "amount": -8 },
+            { "type": "devotion", "amount": 4 },
+            { "type": "veil", "amount": 3 }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "id": "intrigue.matters_of_doctrine",
+    "title": "Matters of Doctrine",
+    "category": "intrigue",
+    "weight": 3,
+    "repeatable": true,
+    "cooldown_turns": 5,
+    "trigger": { "type": "pool" },
+    "body": "It begins as an argument about a footnote and ends, as these things do, as an argument about everything. One faction wants the oaths tightened and the work slowed; the other wants the leash off entirely. They are both looking at you.",
+    "choices": [
+      {
+        "id": "tighten_the_oaths",
+        "label": "Bind them to the discipline. The order survives on its restraints.",
+        "outcome": {
+          "result_text": "You rule for the oath and the hierarchy. The cautious are reassured; the hungry go quiet in the way that is not quite agreement.",
+          "effects": [
+            { "type": "order_alignment", "amount": -15 },
+            { "type": "devotion", "amount": 6 },
+            { "type": "veil", "amount": 3 }
+          ]
+        }
+      },
+      {
+        "id": "loose_the_work",
+        "label": "Loose them to the work. Restraint was always going to fail.",
+        "outcome": {
+          "result_text": "You rule for the open hand. The work leaps forward, and so does the cost of it, and the cautious begin counting the exits.",
+          "effects": [
+            { "type": "order_alignment", "amount": 15 },
+            { "type": "resource", "key": "lore", "amount": 6 },
+            { "type": "member_sanity", "amount": -8 },
+            { "type": "order_corruption", "amount": 4 }
+          ]
+        }
+      },
+      {
+        "id": "let_it_fester",
+        "label": "Say nothing. Let them settle it among themselves.",
+        "outcome": {
+          "result_text": "You decline to decide, and the silence decides for you. The schism does not close; it only learns to whisper.",
+          "effects": [
+            { "type": "devotion", "amount": -6 }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "id": "character.an_unquiet_house",
+    "title": "An Unquiet House",
+    "category": "character",
+    "weight": 2,
+    "repeatable": true,
+    "cooldown_turns": 5,
+    "trigger": { "type": "pool" },
+    "bindings": {
+      "actor": { "from": "member", "prefer": "highest", "by": "Will" }
+    },
+    "body": "A patron's house on the Hill has gone wrong in the specific way the order has learned to recognize. Someone steady should sit the night there and see what wants to be seen. {actor.name} volunteers, which is not the same as being suited to it.",
+    "choices": [
+      {
+        "id": "sit_the_night",
+        "label": "Send {actor.name} to sit the night.",
+        "check": { "scope": "actor", "attribute": "Will", "skill": "Lore", "difficulty": 9 },
+        "on_success": {
+          "result_text": "{actor.name} keeps a steady hand and a steadier lamp, and comes back at dawn with three pages of notes and only a slight tremor.",
+          "effects": [
+            { "type": "resource", "key": "lore", "amount": 8 },
+            { "type": "member_sanity", "scope": "actor", "amount": -8 }
+          ]
+        },
+        "on_failure": {
+          "result_text": "Whatever was in the house found the seam in {actor.name} before the lamp burned down. They are home, and intact, and will not speak of the stairs.",
+          "effects": [
+            { "type": "member_sanity", "scope": "actor", "amount": -22 },
+            { "type": "attention", "key": "occult", "amount": 5 }
+          ]
+        }
+      },
+      {
+        "id": "leave_it_shuttered",
+        "label": "Leave the house shuttered. The patron can wait.",
+        "outcome": {
+          "result_text": "The order keeps its distance. The patron is disappointed, and the house goes on being wrong without an audience.",
+          "effects": [
+            { "type": "institution_disposition", "key": "high_society", "amount": -3 },
+            { "type": "veil", "amount": 2 }
+          ]
+        }
+      }
+    ]
+  }
+]

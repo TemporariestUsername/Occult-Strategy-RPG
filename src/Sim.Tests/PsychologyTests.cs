@@ -1,3 +1,5 @@
+using System.Text.Json;
+using PaleCommunion.Sim.Content;
 using PaleCommunion.Sim.Determinism;
 using PaleCommunion.Sim.Engine;
 using PaleCommunion.Sim.Model;
@@ -105,5 +107,63 @@ public class PsychologyTests
         MemberStatus[] valid = { MemberStatus.Active, MemberStatus.Maddened, MemberStatus.Missing, MemberStatus.Dead };
         Assert.All(s.Members, m => Assert.Contains(m.Status, valid));
         Assert.True(s.Devotion <= 60); // lash-outs can only lower cohesion
+    }
+
+    [Fact]
+    public void MemberSanityEffect_Broadcast_DrainsEveryLivingMember()
+    {
+        var s = GameState.NewCampaign(1);
+        var a = new Member { Id = "a", Sanity = 80, Status = MemberStatus.Active };
+        var b = new Member { Id = "b", Sanity = 40, Status = MemberStatus.Active };
+        var dead = new Member { Id = "c", Sanity = 90, Status = MemberStatus.Dead };
+        s.Members.AddRange(new[] { a, b, dead });
+
+        EffectEngine.Apply(s, new[] { new Effect { Type = "member_sanity", Amount = -25 } }, new SplitMix64Rng(1));
+
+        Assert.Equal(55, a.Sanity);
+        Assert.Equal(15, b.Sanity);
+        Assert.Equal(90, dead.Sanity); // the dead are spared
+    }
+
+    [Fact]
+    public void MemberSanityEffect_Scoped_DrainsOnlyTheBoundMember()
+    {
+        var s = GameState.NewCampaign(1);
+        var a = new Member { Id = "a", Sanity = 50, Status = MemberStatus.Active };
+        var b = new Member { Id = "b", Sanity = 50, Status = MemberStatus.Active };
+        s.Members.AddRange(new[] { a, b });
+        var ctx = new BindingContext();
+        ctx.Set("actor", a);
+
+        EffectEngine.Apply(
+            s, new[] { new Effect { Type = "member_sanity", Scope = "actor", Amount = -30 } }, new SplitMix64Rng(1), ctx);
+
+        Assert.Equal(20, a.Sanity);
+        Assert.Equal(50, b.Sanity);
+    }
+
+    [Fact]
+    public void OrderAlignmentEffect_ShiftsAndReadsBackAsACondition()
+    {
+        var s = GameState.NewCampaign(1);
+        EffectEngine.Apply(s, new[] { new Effect { Type = "order_alignment", Amount = 45 } }, new SplitMix64Rng(1));
+
+        Assert.Equal(45, s.Alignment);
+        Assert.Equal(AlignmentPole.Chaos, AlignmentScale.Classify(s.Alignment));
+
+        var leaningChaos = new Condition { Type = "order_alignment", Op = "gte", Value = JsonSerializer.SerializeToElement(33) };
+        Assert.True(ConditionEvaluator.Evaluate(s, leaningChaos, new SplitMix64Rng(1)));
+    }
+
+    [Fact]
+    public void AdvanceTurn_ResolvesSanityBreaksForFlooredMinds()
+    {
+        var s = GameState.NewCampaign(1);
+        s.Members.Add(new Member { Id = "a", Sanity = 0, Status = MemberStatus.Active });
+
+        TurnReport report = TurnSystem.Advance(s, new Dictionary<string, Scheme>(), new SplitMix64Rng(99));
+
+        SanityBreak br = Assert.Single(report.SanityBreaks);
+        Assert.Equal("a", br.MemberId);
     }
 }

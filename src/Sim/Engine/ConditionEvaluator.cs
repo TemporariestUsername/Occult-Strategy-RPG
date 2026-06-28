@@ -110,6 +110,7 @@ public static class ConditionEvaluator
             "veil" => s.Veil,
             "devotion" => s.Devotion,
             "order_corruption" => s.OrderCorruption,
+            "order_alignment" => s.Alignment,
             "attention" => key switch
             {
                 ContentIds.AttentionMundane => s.AttentionMundane,
